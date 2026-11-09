@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="id">
+<!--
+============ PANDUAN EDIT ============
+1. FOLDER   : simpan file ini bersama "shortmovie.mp4" (video pembuka) dan "terima kasih.mp4" (video penutup) di satu folder, buka di Chrome/Edge.
+              Font Google butuh internet; tanpa internet otomatis pakai font sistem.
+2. ISI SLIDE: cari tulisan "SLIDE:" di bagian DATA untuk loncat ke slide.
+3. WARNA     : cari "CSS 1. DASAR" lalu ubah variabel --n --m --c --s --iv.
+4. LAYOUT    : cari "JS 5. LAYOUT" (satu fungsi per jenis layout); peta slide ke layout ada di "JS 3. PETA SLIDE".
+5. VIDEO     : pembuka = <source src="shortmovie.mp4"> di bagian OPENING; penutup = "terima kasih.mp4" di DATA (terima.src).
+6. TOMBOL    : panah/spasi = pindah, F layar penuh, N catatan, M menu, + - ukuran huruf, R kurangi gerak, Home/End, Esc tutup jendela.
+======================================
+-->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pembelajaran Berbasis Bimbingan</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+/* ===== CSS 1. DASAR: warna, huruf, ukuran layar ===== */
+:root {
+  --n:#172D50;
+  --m:#416D83;
+  --c:#E9A16B;
+  --s:#F2DFAF;
+  --iv:#F7F5EF;
+  --bg:var(--iv);
+  --fg:var(--n);
+  --mu:#416D83;
+  --tb:rgba(23,45,80,.1);
+  --z:1;
+  --fd:Fraunces,Georgia,serif;
+}
+* {
+  box-sizing:border-box;
+  margin:0;
+}
+button {
+  font:inherit;
+}
+html {
+  font-size:calc(min(100vw/96,100vh/54)*var(--z));
+}
+html,
+body {
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  background:var(--n);
+  font-family:'Plus Jakarta Sans',system-ui,sans-serif;
+  color:var(--n);
+}
+
+/* ===== CSS 2. KOTAK SLIDE: latar, tema terang/gelap ===== */
+.s {
+  position:absolute;
+  inset:0 0 3.6rem;
+  padding:2.4rem 5rem 1.2rem;
+  display:none;
+  flex-direction:column;
+  background:var(--bg);
+  color:var(--fg);
+  overflow:hidden;
+}
+.s.on {
+  display:flex;
+  animation:sin .55s cubic-bezier(.2,.7,.2,1);
+}
+@keyframes sin {
+  from {
+    opacity:0;
+    transform:translateX(2.5rem);
+  }
+}
+.s::before {
+  content:"";
+  position:absolute;
+  right:-9rem;
+  top:-9rem;
+  width:32rem;
+  height:32rem;
+  border-radius:50%;
+  background:var(--c);
+  opacity:.14;
+}
+.s::after {
+  content:"";
+  position:absolute;
+  left:-6rem;
+  bottom:-7rem;
+  width:26rem;
+  height:20rem;
+  border-radius:5rem;
+  background:var(--m);
+  opacity:.12;
+  transform:rotate(-14deg);
+}
+.s>* {
+  position:relative;
+  z-index:1;
+}
+.dk {
+  --bg:var(--n);
+  --fg:var(--iv);
+  --mu:#B9CFDA;
+  --tb:rgba(247,245,239,.16);
+}
+.sd {
+  --bg:var(--s);
+  --mu:#2D5266;
+}
+
+/* ===== CSS 3. JUDUL dan TEKS ===== */
+.hd {
+  display:flex;
+  gap:1.4rem;
+  align-items:center;
+  margin-bottom:1.3rem;
+}
+.hi {
+  width:5.2rem;
+  height:5.2rem;
+  flex:none;
+  padding:.5rem;
+  border-radius:50%;
+  background:var(--s);
+  box-shadow:inset 0 .25rem .4rem #fff,0 .4rem .8rem rgba(0,0,0,.25);
+}
+h2 {
+  font:800 2.9rem/1.1 var(--fd);
+  letter-spacing:-.01em;
+}
+h2 small {
+  display:block;
+  font:500 1.25rem/1.35 'Plus Jakarta Sans',system-ui;
+  letter-spacing:0;
+  color:var(--mu);
+  margin-top:.5rem;
+  max-width:72rem;
+}
+p {
+  font-size:1.35rem;
+  line-height:1.5;
+  font-weight:500;
+}
+.lb {
+  display:inline-block;
+  font:800 1rem/1 'Plus Jakarta Sans',system-ui;
+  padding:.3rem .8rem;
+  border-radius:2rem;
+  margin-bottom:.4rem;
+}
+.k1 .lb,
+.k1.lb {
+  background:#416D83;
+  color:#F7F5EF;
+}
+.k2 .lb,
+.k5 .lb,
+.k2.lb,
+.k5.lb {
+  background:#E9A16B;
+  color:#172D50;
+}
+.k3 .lb,
+.k3.lb {
+  background:#F2DFAF;
+  color:#172D50;
+  box-shadow:inset 0 0 0 .12rem #E9A16B;
+}
+.k4 .lb,
+.k4.lb {
+  background:#172D50;
+  color:#F7F5EF;
+}
+
+/* ===== CSS 4. KARTU (klik untuk jendela detail) ===== */
+.it {
+  display:block;
+  position:relative;
+  text-align:left;
+  color:var(--n);
+  cursor:pointer;
+  border:0;
+  background:#FBF8F1;
+  border-radius:1.5rem;
+  padding:1rem 1.3rem 1rem;
+  box-shadow:inset 0 .22rem .35rem #fff,inset 0 -.3rem .5rem rgba(23,45,80,.1),0 .5rem 1rem rgba(23,45,80,.2);
+  transition:transform .2s;
+}
+.it:hover {
+  transform:translateY(-.25rem);
+}
+.it::after {
+  content:"+";
+  position:absolute;
+  right:.8rem;
+  bottom:.6rem;
+  width:1.9rem;
+  height:1.9rem;
+  border-radius:50%;
+  background:var(--c);
+  color:var(--n);
+  font:800 1.4rem/1.9rem 'Plus Jakarta Sans',system-ui,sans-serif;
+  text-align:center;
+}
+.it h3 {
+  font:800 1.5rem/1.2 var(--fd);
+  padding-right:3.6rem;
+}
+.it p {
+  font-size:1.2rem;
+  line-height:1.35;
+  margin-top:.3rem;
+  padding-right:1.6rem;
+}
+.ic {
+  position:absolute;
+  right:.8rem;
+  top:.7rem;
+  width:3.4rem;
+  height:3.4rem;
+  filter:drop-shadow(0 .25rem .3rem rgba(23,45,80,.3));
+}
+:focus-visible {
+  outline:.22rem solid var(--c);
+  outline-offset:.2rem;
+}
+
+/* ===== CSS 5. KARAKTER GURU dan MURID ===== */
+.kid {
+  overflow:visible;
+  filter:drop-shadow(0 .6rem .6rem rgba(23,45,80,.3));
+}
+.bd {
+  animation:fl 4.5s ease-in-out infinite;
+}
+@keyframes fl {
+  50% {
+    transform:translateY(-.8rem);
+  }
+}
+.ey {
+  transform-box:fill-box;
+  transform-origin:center;
+  animation:bk 4s infinite;
+}
+@keyframes bk {
+  0%,94%,100% {
+    transform:scaleY(1);
+  }
+  97% {
+    transform:scaleY(.1);
+  }
+}
+.wv {
+  transform-origin:72px 76px;
+  animation:wv 1.6s ease-in-out infinite;
+}
+@keyframes wv {
+  50% {
+    transform:rotate(-22deg);
+  }
+}
+/* hero */
+
+/* ===== CSS 6. SLIDE JUDUL (hero) ===== */
+.hero {
+  flex-direction:row;
+  align-items:center;
+  justify-content:space-between;
+  gap:3rem;
+}
+.hero h1 {
+  font:800 6.4rem/1 var(--fd);
+  letter-spacing:-.02em;
+}
+.hero .sub {
+  font-size:2rem;
+  line-height:1.4;
+  margin-top:1.6rem;
+  max-width:44rem;
+}
+.hero .src {
+  font:800 1.4rem 'Plus Jakarta Sans',system-ui,sans-serif;
+  color:var(--c);
+  margin-top:2rem;
+}
+.on .rise {
+  animation:rise .9s cubic-bezier(.2,.8,.2,1) backwards;
+}
+@keyframes rise {
+  from {
+    opacity:0;
+    transform:translateY(3rem);
+  }
+}
+.stage {
+  width:46rem;
+  height:40rem;
+  position:relative;
+  flex:none;
+}
+.disc {
+  position:absolute;
+  left:1rem;
+  right:1rem;
+  bottom:2rem;
+  height:7rem;
+  border-radius:50%;
+  background:var(--s);
+  box-shadow:inset 0 .5rem .7rem #fff,0 1.2rem 2rem rgba(0,0,0,.35);
+}
+.stage .kid {
+  position:absolute;
+  bottom:3.6rem;
+}
+.stage .t {
+  left:4rem;
+  width:17rem;
+}
+.stage .u {
+  right:5rem;
+  width:15rem;
+}
+.fo {
+  position:absolute;
+  width:6rem;
+  height:6rem;
+  animation:fl 5s ease-in-out infinite;
+  filter:drop-shadow(0 .4rem .4rem rgba(0,0,0,.3));
+}
+/* layouts */
+
+/* ===== CSS 7. LAYOUT per bagian: peta, accordion, persamaan, hub, tab, alur, timeline, rangkuman, kuis, referensi, penutup ===== */
+.map {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:2.4rem;
+  flex:1;
+  min-height:0;
+}
+.mc {
+  display:flex;
+  flex-direction:column;
+}
+.mc .it {
+  flex:1;
+}
+.mc i {
+  height:3rem;
+  width:.35rem;
+  margin:0 auto;
+  background:repeating-linear-gradient(var(--m) 0 .5rem,transparent .5rem 1rem);
+}
+.acw {
+  display:grid;
+  grid-template-columns:22rem 1fr;
+  gap:3rem;
+  flex:1;
+  min-height:0;
+  align-items:center;
+}
+.art {
+  position:relative;
+}
+.art .kid {
+  width:11rem;
+}
+.art .kid+.kid {
+  margin-left:-1.5rem;
+  width:10rem;
+}
+.ac {
+  display:flex;
+  flex-direction:column;
+  gap:.55rem;
+}
+.ar {
+  background:#FBF8F1;
+  color:var(--n);
+  border-radius:1.3rem;
+  box-shadow:inset 0 .2rem .3rem #fff,0 .4rem .8rem rgba(23,45,80,.18);
+}
+.ah {
+  display:flex;
+  gap:1rem;
+  align-items:baseline;
+  width:100%;
+  border:0;
+  background:none;
+  color:inherit;
+  text-align:left;
+  padding:.55rem 1.2rem;
+  cursor:pointer;
+  flex-wrap:wrap;
+}
+.ah .lb {
+  margin:0;
+}
+.ah b {
+  font:800 1.4rem var(--fd);
+}
+.ah em {
+  display:none;
+  font:600 1.2rem 'Plus Jakarta Sans',system-ui,sans-serif;
+  font-style:normal;
+  flex-basis:100%;
+}
+.ar.on .ah em {
+  display:block;
+}
+.ab {
+  display:none;
+  padding:0 1.2rem 1rem;
+  font-size:1.3rem;
+}
+.ar.on .ab {
+  display:block;
+  border-top:.12rem dashed var(--c);
+  padding-top:.6rem;
+  margin:0 1.2rem;
+  padding-left:0;
+  padding-right:0;
+}
+.eq {
+  display:grid;
+  grid-template-columns:1.25fr auto 1fr auto 1.25fr;
+  gap:1.2rem;
+  align-items:stretch;
+  flex:1;
+  min-height:0;
+}
+.e1,
+.e2,
+.e3 {
+  display:flex;
+  flex-direction:column;
+  gap:.9rem;
+}
+.e2 .it,
+.e3 .it {
+  flex:1;
+}
+.e1 .it {
+  flex:1;
+}
+.e1 .it h3,
+.eb .it h3 {
+  font-size:1.4rem;
+}
+.op {
+  align-self:center;
+  font:800 4.6rem var(--fd);
+  color:var(--c);
+  font-style:normal;
+}
+.eb {
+  margin-top:1.2rem;
+}
+.eb .it {
+  width:100%;
+}
+.sp2 {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:3rem;
+  flex:1;
+  min-height:0;
+}
+.sp {
+  display:flex;
+  flex-direction:column;
+  gap:.8rem;
+}
+.orb {
+  align-self:center;
+  padding:.7rem 2.6rem;
+  border-radius:3rem;
+  background:var(--c);
+  color:var(--n);
+  font:800 1.7rem var(--fd);
+  box-shadow:inset 0 .25rem .4rem rgba(255,255,255,.7),0 .5rem 1rem rgba(0,0,0,.25);
+}
+.pill {
+  flex:1;
+  padding:.7rem 1.2rem;
+}
+.pill h3 {
+  font-size:1.4rem;
+}
+.tb {
+  display:flex;
+  flex-direction:column;
+  gap:1.3rem;
+  flex:1;
+  min-height:0;
+}
+.tb.v {
+  flex-direction:row;
+}
+.tl {
+  display:flex;
+  gap:.7rem;
+  flex-wrap:wrap;
+}
+.tb.v .tl {
+  flex-direction:column;
+  width:31rem;
+  flex:none;
+  flex-wrap:nowrap;
+}
+.tt {
+  border:0;
+  border-radius:1rem;
+  padding:.7rem 1.3rem;
+  background:var(--tb);
+  color:var(--fg);
+  cursor:pointer;
+  font:800 1.5rem 'Plus Jakarta Sans',system-ui,sans-serif;
+  text-align:left;
+}
+.tb.v .tt {
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:.2rem;
+  padding:.6rem 1.1rem;
+  font-size:1.25rem;
+}
+.tb.v .tt .lb {
+  margin:0;
+}
+.tt[aria-selected=true] {
+  background:var(--fg);
+  color:var(--bg);
+  box-shadow:0 0 0 .2rem var(--c);
+}
+.tb.v .tt[aria-selected=true] .lb {
+  background:var(--c);
+  color:var(--n);
+}
+.tp {
+  flex:1;
+  min-height:0;
+  background:#FBF8F1;
+  color:var(--n);
+  border-radius:2rem;
+  padding:2rem 2.6rem;
+  box-shadow:inset 0 .25rem .4rem #fff,0 .6rem 1.2rem rgba(0,0,0,.2);
+  display:flex;
+  gap:2rem;
+  align-items:center;
+}
+.tp>div {
+  flex:1;
+}
+.tp .kid {
+  width:11rem;
+  flex:none;
+}
+.tp h3 {
+  font:800 2.3rem/1.15 var(--fd);
+  margin-bottom:.8rem;
+}
+.tp p {
+  font-size:1.65rem;
+  line-height:1.5;
+}
+.tp .ld {
+  font-weight:800;
+  margin-bottom:.6rem;
+}
+.tb:not(.v) .tp h3 {
+  font-size:3.2rem;
+}
+.tb:not(.v) .tp p {
+  font-size:2.2rem;
+}
+.tb:not(.v) .tp .kid {
+  width:14rem;
+}
+.fw {
+  display:flex;
+  align-items:stretch;
+  gap:.6rem;
+  flex:1;
+  min-height:0;
+}
+.fc {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:.9rem;
+  justify-content:center;
+}
+.fc .it {
+  flex:0 1 auto;
+}
+.fw>i {
+  align-self:center;
+  font:800 3.4rem var(--fd);
+  color:var(--c);
+  font-style:normal;
+}
+.tm {
+  display:grid;
+  grid-template-columns:30rem 1fr;
+  gap:3rem;
+  flex:1;
+  min-height:0;
+}
+.src2 {
+  background:#FBF8F1;
+  color:var(--n);
+  border-radius:2rem;
+  padding:1.6rem 1.8rem;
+  align-self:start;
+  box-shadow:inset 0 .25rem .4rem #fff,0 .6rem 1.2rem rgba(0,0,0,.3);
+}
+.src2 svg {
+  width:5rem;
+  height:5rem;
+  float:right;
+}
+.src2 h3,
+.tl2 h3 {
+  font:800 1.6rem/1.2 var(--fd);
+  margin-bottom:.3rem;
+}
+.src2 p {
+  font-size:1.15rem;
+  line-height:1.4;
+  margin-top:.4rem;
+}
+.tl2 {
+  list-style:none;
+  padding:0 0 0 2.2rem;
+  border-left:.35rem solid var(--c);
+  display:flex;
+  flex-direction:column;
+  gap:1.1rem;
+  justify-content:center;
+}
+.tl2 li {
+  position:relative;
+}
+.tl2 li::before {
+  content:"";
+  position:absolute;
+  left:-3.05rem;
+  top:.3rem;
+  width:1.4rem;
+  height:1.4rem;
+  border-radius:50%;
+  background:var(--c);
+  box-shadow:0 0 0 .3rem var(--bg);
+}
+.tl2 p {
+  font-size:1.3rem;
+  line-height:1.4;
+}
+.tl2 .ld {
+  font-weight:800;
+}
+.kn {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:2.4rem;
+  flex:1;
+  align-items:end;
+  padding-bottom:1rem;
+}
+.kn .it {
+  padding:1.4rem 1.6rem;
+}
+.kn .it:nth-child(2) {
+  margin-bottom:5rem;
+}
+.kn .it:nth-child(3) {
+  margin-bottom:10rem;
+}
+.kn .it:nth-child(1) {
+  margin-bottom:0;
+}
+.kn h3 {
+  font-size:1.7rem;
+}
+.kn p {
+  font-size:1.3rem;
+}
+.kn .big {
+  position:absolute;
+  left:5rem;
+  top:11rem;
+  width:14rem;
+  height:14rem;
+}
+.qz {
+  display:flex;
+  flex-direction:column;
+  gap:1.4rem;
+  flex:1;
+  justify-content:center;
+}
+.qb {
+  display:flex;
+  align-items:center;
+  gap:1.6rem;
+}
+.qb .kid {
+  width:8rem;
+  flex:none;
+}
+.bub {
+  background:#FBF8F1;
+  color:var(--n);
+  border-radius:2rem;
+  padding:1.2rem 1.8rem;
+  font-size:1.6rem;
+  font-weight:700;
+  box-shadow:inset 0 .25rem .4rem #fff,0 .5rem 1rem rgba(23,45,80,.2);
+}
+.qo {
+  display:flex;
+  flex-direction:column;
+  gap:.8rem;
+}
+.qo button {
+  background:#FBF8F1;
+  border:.18rem solid var(--n);
+  color:var(--n);
+  font-weight:700;
+  font-size:1.45rem;
+  padding:.9rem 1.3rem;
+  border-radius:1.1rem;
+  text-align:left;
+  cursor:pointer;
+}
+.qo button:hover:not(:disabled) {
+  transform:translateX(.4rem);
+}
+.qo button.ok {
+  background:#8FC9A9;
+  border-width:.28rem;
+}
+.qo button.no {
+  background:#F1A59A;
+  text-decoration:line-through;
+}
+#fb {
+  font-weight:800;
+  font-size:1.4rem;
+  min-height:3.6rem;
+}
+.rf2 {
+  list-style:none;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:.5rem 1.4rem;
+  padding:0;
+}
+.rf2 .it {
+  display:flex;
+  gap:1rem;
+  align-items:center;
+  width:100%;
+  padding:.35rem 1rem;
+  border-radius:1rem;
+}
+.rf2 .it::after {
+  display:none;
+}
+.yr {
+  font:800 1.5rem var(--fd);
+  min-width:6.5rem;
+  color:var(--m);
+}
+.rf2 strong {
+  display:block;
+  font-size:1.3rem;
+}
+.rf2 em {
+  font:500 1.1rem 'Plus Jakarta Sans',system-ui,sans-serif;
+  font-style:normal;
+}
+.fn {
+  font-size:1.1rem;
+  margin-top:.7rem;
+  color:var(--mu);
+  font-weight:700;
+}
+.en {
+  display:flex;
+  gap:3.2rem;
+  align-items:center;
+  flex:1;
+}
+.en>div:first-child {
+  flex:.9;
+}
+.en h1 {
+  font:800 6rem/1 var(--fd);
+}
+.en p {
+  font-size:1.9rem;
+  line-height:1.45;
+  margin-top:1.2rem;
+}
+.bm {
+  margin-top:1.4rem;
+  background:var(--c);
+  color:var(--n);
+  font-weight:800;
+  font-size:1.5rem;
+  padding:.8rem 1.4rem;
+  border-radius:1.2rem;
+}
+.vf {
+  flex:1.15;
+  position:relative;
+  border-radius:2rem;
+  background:var(--s);
+  padding:.9rem;
+  box-shadow:inset 0 .3rem .5rem #fff,0 1rem 2rem rgba(0,0,0,.4);
+}
+.vf video {
+  width:100%;
+  display:block;
+  border-radius:1.4rem;
+}
+.stk {
+  position:absolute;
+  right:1.2rem;
+  top:-1.1rem;
+  background:var(--c);
+  color:var(--n);
+  font:800 1.1rem 'Plus Jakarta Sans',system-ui,sans-serif;
+  padding:.4rem 1rem;
+  border-radius:2rem;
+  transform:rotate(5deg);
+}
+/* modal, hud, intro */
+
+/* ===== CSS 8. JENDELA DETAIL, BAR BAWAH (HUD), MENU, CATATAN, OPENING ===== */
+#ov {
+  position:fixed;
+  inset:0 0 3.6rem;
+  z-index:60;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:rgba(23,45,80,.72);
+  backdrop-filter:blur(4px);
+}
+#ov.on {
+  display:flex;
+}
+#md {
+  width:78rem;
+  max-width:94%;
+  max-height:92%;
+  overflow:auto;
+  background:#FBF8F1;
+  border-radius:2.2rem;
+  padding:1.5rem 2.4rem 1.8rem;
+  box-shadow:inset 0 .3rem .5rem #fff,0 1.4rem 3rem rgba(0,0,0,.4);
+  animation:sin .35s;
+}
+.mh {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+#mt {
+  font:800 2.6rem/1.15 var(--fd);
+  margin:.4rem 0 .8rem;
+}
+.mb {
+  display:flex;
+  gap:1.6rem;
+  align-items:flex-start;
+}
+#mk {
+  width:9rem;
+  flex:none;
+}
+#mbd {
+  flex:1;
+}
+#mbd h4 {
+  font:800 1.2rem 'Plus Jakarta Sans',system-ui,sans-serif;
+  color:var(--m);
+  margin:.8rem 0 .3rem;
+}
+#mbd p {
+  font-size:1.75rem;
+  line-height:1.5;
+}
+#mx,
+#mc {
+  border:0;
+  cursor:pointer;
+  background:var(--n);
+  color:var(--iv);
+  font-weight:800;
+}
+#mx {
+  width:3.2rem;
+  height:3.2rem;
+  border-radius:50%;
+  padding:.7rem;
+}
+#mx svg {
+  width:100%;
+  height:100%;
+}
+#mc {
+  float:right;
+  margin-top:1rem;
+  font-size:1.4rem;
+  padding:.6rem 2rem;
+  border-radius:2rem;
+}
+#hud {
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:3.6rem;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  gap:.7rem;
+  padding:0 1.2rem;
+  background:#0F2040;
+  color:var(--iv);
+}
+#hud button {
+  border:0;
+  border-radius:.8rem;
+  background:rgba(247,245,239,.14);
+  color:var(--iv);
+  height:2.5rem;
+  min-width:3rem;
+  padding:0 .7rem;
+  font-weight:800;
+  font-size:1.3rem;
+  cursor:pointer;
+}
+#hud button:hover,
+#hud button[aria-pressed=true] {
+  background:var(--c);
+  color:var(--n);
+}
+#hud svg {
+  width:1.6rem;
+  height:1.6rem;
+  vertical-align:middle;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:4;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+#pr {
+  font-weight:800;
+  font-size:1.3rem;
+  min-width:5.5rem;
+}
+#trk {
+  flex:1;
+  height:.7rem;
+  border-radius:1rem;
+  background:rgba(247,245,239,.2);
+  position:relative;
+  margin:0 .8rem;
+}
+#fill {
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  border-radius:1rem;
+  background:var(--c);
+  transition:width .8s;
+}
+#wk div {
+  position:absolute;
+  bottom:.2rem;
+  width:2.4rem;
+  transition:left 1s cubic-bezier(.5,0,.3,1);
+}
+#wk svg {
+  width:100%;
+  filter:none;
+}
+#wk .bd {
+  animation:none;
+}
+#menu {
+  position:fixed;
+  left:.6rem;
+  bottom:3.9rem;
+  z-index:55;
+  width:30rem;
+  max-height:70vh;
+  overflow:auto;
+  background:var(--iv);
+  border-radius:1.2rem;
+  padding:.5rem;
+  display:none;
+  box-shadow:0 1rem 2rem rgba(0,0,0,.4);
+}
+#menu.on {
+  display:block;
+}
+#menu button {
+  display:block;
+  width:100%;
+  text-align:left;
+  border:0;
+  background:none;
+  color:var(--n);
+  font-size:1.15rem;
+  font-weight:600;
+  padding:.45rem .7rem;
+  border-radius:.6rem;
+  cursor:pointer;
+}
+#menu button.cur {
+  background:var(--c);
+  font-weight:800;
+}
+#notes {
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:3.6rem;
+  z-index:52;
+  background:var(--s);
+  color:var(--n);
+  border-top:.2rem solid var(--c);
+  padding:.8rem 2rem;
+  font-size:1.3rem;
+  font-weight:600;
+  display:none;
+  max-height:30vh;
+  overflow:auto;
+}
+#notes.on {
+  display:block;
+}
+#in {
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:#0D1B31;
+  color:var(--iv);
+  display:grid;
+  place-items:center;
+  text-align:center;
+  transition:opacity .9s;
+}
+#in.out {
+  opacity:0;
+  pointer-events:none;
+}
+.st {
+  display:none;
+  flex-direction:column;
+  align-items:center;
+  gap:2rem;
+  padding:4rem;
+  max-width:84rem;
+}
+.st.on {
+  display:flex;
+}
+.st h1 {
+  font:800 5rem/1.1 var(--fd);
+}
+.st p {
+  font-size:1.4rem;
+  color:#B9CFDA;
+}
+.st.vd {
+  position:fixed;
+  inset:0;
+  padding:0;
+  max-width:none;
+  gap:0;
+  background:#000;
+}
+.st video {
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+#go {
+  border:0;
+  border-radius:3rem;
+  background:var(--c);
+  color:var(--n);
+  font:800 1.9rem 'Plus Jakarta Sans',system-ui,sans-serif;
+  padding:1rem 3.2rem;
+  cursor:pointer;
+  box-shadow:inset 0 .3rem .5rem rgba(255,255,255,.6),0 .8rem 1.6rem rgba(0,0,0,.4);
+}
+#sk {
+  position:fixed;
+  right:1.4rem;
+  bottom:1.2rem;
+  z-index:3;
+  border:.12rem solid #B9CFDA;
+  background:rgba(13,27,49,.6);
+  color:var(--iv);
+  border-radius:2rem;
+  padding:.4rem 1.2rem;
+  font-size:1.15rem;
+  cursor:pointer;
+}
+#vm[hidden] {
+  display:none;
+}
+#vm {
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  background:#0D1B31;
+  padding:4rem;
+  font-size:1.6rem;
+  line-height:1.5;
+}
+
+/* ===== CSS 9. MODE KURANGI GERAK ===== */
+.rm * {
+  animation:none!important;
+  transition:none!important;
+}
+@media(prefers-reduced-motion:reduce) {
+  * {
+    animation:none!important;
+    transition:none!important;
+  }
+}
+</style>
+</head>
+<body>
+<!-- ===== IKON SVG: filter clay + ikon 3D + ikon tombol ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<filter id="cl" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur in="SourceAlpha" stdDeviation="2.2" result="b"/><feSpecularLighting in="b" surfaceScale="5" specularConstant=".9" specularExponent="22" lighting-color="#fff" result="s"><fePointLight x="-30" y="-50" z="90"/></feSpecularLighting><feComposite in="s" in2="SourceAlpha" operator="in" result="h"/><feComposite in="SourceGraphic" in2="h" operator="arithmetic" k1="0" k2="1" k3=".7" k4="0"/></filter>
+
+  <symbol id="book" viewBox="0 0 48 48"><g filter="url(#cl)"><path d="M4 12c7-3 14-2 20 3v24c-6-5-13-6-20-3z" fill="#F7F5EF"/><path d="M44 12c-7-3-14-2-20 3v24c6-5 13-6 20-3z" fill="#F2DFAF"/><path d="M22.5 15h3v24h-3z" fill="#416D83"/></g></symbol>
+
+  <symbol id="bulb" viewBox="0 0 48 48"><g filter="url(#cl)"><circle cx="24" cy="19" r="13" fill="#E9A16B"/><rect x="17" y="30" width="14" height="10" rx="4" fill="#416D83"/><rect x="19" y="41" width="10" height="4" rx="2" fill="#172D50"/></g></symbol>
+
+  <symbol id="star" viewBox="0 0 48 48"><g filter="url(#cl)"><path d="M24 4l5.5 12.5 13.5 1.5-10 9.2 2.8 13.3L24 33.6 12.2 40.5 15 27.2 5 18l13.5-1.5z" fill="#E9A16B"/></g></symbol>
+
+  <symbol id="pencil" viewBox="0 0 48 48"><g filter="url(#cl)"><path d="M7 41l3-11L33 7l8 8-23 23z" fill="#E9A16B"/><path d="M7 41l3-11 8 8z" fill="#F2DFAF"/><path d="M33 7l3-3 8 8-3 3z" fill="#416D83"/></g></symbol>
+
+  <symbol id="cap" viewBox="0 0 48 48"><g filter="url(#cl)"><path d="M24 9L3 19l21 10 21-10z" fill="#172D50"/><path d="M12 24v10c6 5 18 5 24 0V24l-12 6z" fill="#416D83"/><circle cx="43" cy="20" r="2.5" fill="#E9A16B"/></g></symbol>
+
+  <symbol id="plus" viewBox="0 0 48 48"><g filter="url(#cl)"><path d="M14 15l20-3M14 15l8 21M34 12L22 36" stroke="#416D83" stroke-width="3.5" fill="none"/><circle cx="14" cy="15" r="8" fill="#E9A16B"/><circle cx="34" cy="12" r="7" fill="#F2DFAF"/><circle cx="22" cy="36" r="8" fill="#416D83"/></g></symbol>
+
+  <symbol id="cmp" viewBox="0 0 48 48"><g filter="url(#cl)"><circle cx="24" cy="24" r="19" fill="#F7F5EF"/><path d="M24 8l6 16-6 16-6-16z" fill="#416D83"/><path d="M24 8l6 16H18z" fill="#E9A16B"/></g></symbol>
+
+  <symbol id="pz" viewBox="0 0 48 48"><g filter="url(#cl)"><path d="M8 14h10a5 5 0 1 1 10 0h12v10a5 5 0 1 0 0 10v10H28a5 5 0 1 0-10 0H8z" fill="#E9A16B"/></g></symbol>
+
+  <symbol id="sb" viewBox="0 0 48 48"><g filter="url(#cl)"><path d="M5 7h26a4 4 0 0 1 4 4v13a4 4 0 0 1-4 4H17l-7 7v-7H5a4 4 0 0 1-4-4V11a4 4 0 0 1 4-4z" fill="#F7F5EF"/><path d="M20 20h22a4 4 0 0 1 4 4v11a4 4 0 0 1-4 4h-3v6l-7-6H24a4 4 0 0 1-4-4z" fill="#E9A16B"/></g></symbol>
+
+  <symbol id="cloud" viewBox="0 0 48 48"><g filter="url(#cl)"><path d="M12 38a9 9 0 0 1 1-18 11 11 0 0 1 21-2 10 10 0 0 1 2 20z" fill="#F7F5EF"/><path d="M16 33h16" stroke="#416D83" stroke-width="3" stroke-linecap="round"/></g></symbol>
+
+  <symbol id="plant" viewBox="0 0 48 48"><g filter="url(#cl)"><path d="M24 40V20" stroke="#416D83" stroke-width="3"/><path d="M24 28c-8 0-12-5-12-11 8 0 12 4 12 11zM24 24c6 0 10-4 10-9-7 0-10 3-10 9z" fill="#416D83"/><path d="M15 40h18l-2.5-9h-13z" fill="#E9A16B"/></g></symbol>
+
+  <symbol id="clip" viewBox="0 0 48 48"><g filter="url(#cl)"><rect x="9" y="7" width="30" height="36" rx="5" fill="#F7F5EF"/><rect x="17" y="3" width="14" height="8" rx="3" fill="#416D83"/><path d="M15 21h18M15 28h18M15 35h10" stroke="#E9A16B" stroke-width="3" stroke-linecap="round"/></g></symbol>
+
+  <symbol id="mag" viewBox="0 0 48 48"><g filter="url(#cl)"><rect x="5" y="5" width="28" height="36" rx="4" fill="#F7F5EF"/><path d="M11 15h16M11 22h12" stroke="#416D83" stroke-width="3" stroke-linecap="round"/><circle cx="31" cy="30" r="9" fill="#F2DFAF" stroke="#416D83" stroke-width="3.5"/><path d="M38 37l6 6" stroke="#E9A16B" stroke-width="5" stroke-linecap="round"/></g></symbol>
+
+  <symbol id="node" viewBox="0 0 48 48"><g filter="url(#cl)"><path d="M10 34l14-20 14 14" stroke="#416D83" stroke-width="3" fill="none"/><circle cx="10" cy="34" r="5" fill="#416D83"/><circle cx="24" cy="14" r="6.5" fill="#E9A16B"/><circle cx="38" cy="28" r="5" fill="#F2DFAF"/></g></symbol>
+
+  <symbol id="stk" viewBox="0 0 48 48"><g filter="url(#cl)"><rect x="5" y="31" width="38" height="10" rx="4" fill="#416D83"/><rect x="8" y="20" width="32" height="10" rx="4" fill="#E9A16B"/><rect x="11" y="9" width="26" height="10" rx="4" fill="#F2DFAF"/></g></symbol>
+
+  <symbol id="fp" viewBox="0 0 48 48"><g filter="url(#cl)"><circle cx="24" cy="24" r="19" fill="#F7F5EF"/><path d="M10 26a14 14 0 0 1 28 0M16 30a8 8 0 0 1 16 0M24 40V26" stroke="#E9A16B" stroke-width="3.5" fill="none" stroke-linecap="round"/></g></symbol>
+
+  <symbol id="i-menu" viewBox="0 0 48 48"><path d="M8 14h32M8 24h32M8 34h32"/></symbol>
+  <symbol id="i-prev" viewBox="0 0 48 48"><path d="M30 10L16 24l14 14"/></symbol>
+  <symbol id="i-next" viewBox="0 0 48 48"><path d="M18 10l14 14-14 14"/></symbol>
+
+  <symbol id="i-notes" viewBox="0 0 48 48"><path d="M8 10h32v22H20l-9 8v-8H8z"/></symbol>
+  <symbol id="i-fs" viewBox="0 0 48 48"><path d="M8 18V8h10M30 8h10v10M40 30v10H30M18 40H8V30"/></symbol>
+  <symbol id="i-mo" viewBox="0 0 48 48"><path d="M6 28q6-12 12 0t12 0 12 0"/></symbol>
+  <symbol id="i-x" viewBox="0 0 48 48"><path d="M10 10l28 28M38 10L10 38"/></symbol>
+
+</defs></svg>
+
+
+<!-- ===== SLIDE DIRAKIT OTOMATIS OLEH JAVASCRIPT ke dalam <main id="deck"> ===== -->
+<main id="deck"></main>
+
+<!-- ===== JENDELA DETAIL, MENU, CATATAN ===== -->
+<div id="ov"><div id="md" role="dialog" aria-modal="true" aria-labelledby="mt"><div class="mh"><span class="lb k1" id="ml"></span><button id="mx" aria-label="Tutup jendela"><svg viewBox="0 0 48 48" style="fill:none;stroke:currentColor;stroke-width:5;stroke-linecap:round"><use href="#i-x"/></svg></button></div><h3 id="mt"></h3><div class="mb"><div id="mk"></div><div id="mbd"></div></div><button id="mc">Tutup</button></div></div>
+<nav id="menu" aria-label="Daftar slide"></nav><div id="notes" role="note"></div>
+
+<!-- ===== BAR BAWAH: navigasi, progres, kontrol ===== -->
+<div id="hud" role="toolbar" aria-label="Kontrol presentasi">
+<button id="mb" aria-label="Menu slide (M)" aria-expanded="false"><svg viewBox="0 0 48 48"><use href="#i-menu"/></svg></button>
+<button id="pv" aria-label="Slide sebelumnya"><svg viewBox="0 0 48 48"><use href="#i-prev"/></svg></button>
+<button id="nx" aria-label="Slide berikutnya"><svg viewBox="0 0 48 48"><use href="#i-next"/></svg></button>
+<span id="pr">01 / 01</span><div id="trk" role="progressbar" aria-label="Kemajuan presentasi"><i id="fill"></i><div id="wk"></div></div>
+<button id="nb" aria-label="Catatan presenter (N)"><svg viewBox="0 0 48 48"><use href="#i-notes"/></svg></button>
+<button id="rmb" aria-label="Kurangi gerak (R)" aria-pressed="false"><svg viewBox="0 0 48 48"><use href="#i-mo"/></svg></button>
+<button id="zm" aria-label="Perkecil huruf">A−</button><button id="zp" aria-label="Perbesar huruf">A+</button>
+<button id="fs" aria-label="Layar penuh (F)"><svg viewBox="0 0 48 48"><use href="#i-fs"/></svg></button></div>
+
+<!-- ===== OPENING: 0 mulai, 1 video, 2 satu kata, 3 diskusi, 4 judul ===== -->
+<div id="in"><div class="st on" id="st0"><button id="go">Mulai presentasi</button><p id="keys"></p></div>
+
+  <div class="st vd" id="st1"><video id="v1" playsinline preload="auto"><source src="shortmovie.mp4" type="video/mp4"></video><div id="vm" hidden>Video pembuka belum ditemukan. Simpan video bullying dengan nama shortmovie.mp4 di folder yang sama dengan file ini, lalu muat ulang. Tekan Lewati untuk lanjut.</div><button id="sk">Lewati ›</button></div>
+
+  <div class="st" id="st2"><h1>Satu kata buat video tadi, apa?</h1><p>Spasi untuk lanjut</p></div>
+
+  <div class="st" id="st3"><h1>Menurut kalian, anak yang bikin masalah itu butuh dihukum atau dibimbing? Atau dua-duanya?</h1><p>Spasi untuk lanjut</p></div>
+
+  <div class="st" id="st4"><h1>PEMBELAJARAN BERBASIS BIMBINGAN</h1></div></div>
+<script>
+/* ===== DATA: ISI SLIDE (cari "SLIDE:" untuk loncat) =====
+   Tiap kartu = [warna 1-5, label kecil, judul, teks singkat di kartu, teks lengkap di jendela, ekspresi, ikon]
+   ekspresi: read think hand happy confused mentor | ikon: book bulb star pencil cap plus cmp pz sb cloud plant
+   n = catatan presenter (tekan N) | h = judul slide | s = subjudul */
+const D = {
+  /* ===== SLIDE: Judul ===== */
+  judul: {"n": "Buka dengan satu kalimat: bab ini membahas cara guru mengajar sekaligus membimbing. Sebut tujuan: paham konsep, prinsip, ciri, dan cara merancangnya.", "h": "Pembelajaran<br>Berbasis Bimbingan", "p": "Guru tidak hanya menyampaikan materi, tetapi membimbing peserta didik menuju kemandirian.", "src": "Bab 8 · Psikologi Pendidikan dan Bimbingan"},
+
+  slides: [
+    /* ===== SLIDE: Tujuan dan Materi ===== */
+    {
+      t: "Tujuan dan Materi",
+      n: "Bacakan tiga tujuan lalu tiga materi. Ini peta jalan presentasi: pengertian, prinsip dan ciri-ciri, lalu rancangan.",
+      h: "<span class=\"mk\">Tujuan</span> dan Materi Pembelajaran",
+      s: "Bab 8 · Psikologi Pendidikan dan Bimbingan · hal. 107",
+      i: [
+        [1, "Tujuan 1", "Menyintesiskan pengertian", "Mahasiswa mampu menyintesiskan pengertian pembelajaran berbasis bimbingan.", "", "think", "bulb"],
+        [3, "Tujuan 2", "Merumuskan prinsip dan ciri", "Mahasiswa mampu merumuskan prinsip dan ciri-ciri pembelajaran berbasis bimbingan.", "", "think", "star"],
+        [5, "Tujuan 3", "Merancang pembelajaran", "Mahasiswa mampu merancang pembelajaran berbasis bimbingan.", "", "think", "pencil"],
+        [1, "Materi 1", "Pengertian / konsep", "Pengertian atau konsep pembelajaran berbasis bimbingan.", "", "read", "book"],
+        [3, "Materi 2", "Prinsip dan ciri-ciri", "Prinsip dan ciri-ciri pembelajaran berbasis bimbingan.", "", "read", "plus"],
+        [5, "Materi 3", "Rancangan", "Rancangan pembelajaran berbasis bimbingan.", "", "read", "cap"]
+      ]
+    },
+
+    /* ===== SLIDE: A. Pendahuluan ===== */
+    {
+      t: "A. Pendahuluan",
+      n: "Guru yang baik paham siswanya. Ceramah saja tidak cukup. Klik tiap kartu untuk teks lengkap. Bimbingan adalah bantuan agar orang menjadi mandiri.",
+      h: "<span class=\"mk\">A. Pendahuluan</span>",
+      s: "Kenapa guru perlu membimbing, bukan hanya mengajar",
+      i: [
+        [1, "Peran guru", "Guru wajib memahami peserta didik", "Memahami tahap perkembangan, potensi, kebutuhan, dan masalah setiap peserta didik.", "Terlepas dari bagaimana aktivitas guru mengajar, guru harus memahami semua kebutuhan peserta didik dan berupaya mengembangkan potensi mereka di setiap tahap perkembangan. Calon guru perlu memahami peserta didik sebelum terjun ke dunia pendidikan, karena setiap peserta didik memiliki kebutuhan dan masalah berbeda.", "think", "cap"],
+        [2, "Masalah metode", "Ceramah saja membosankan", "Di era milenial paradigma bergeser: peserta didik lebih aktif, guru menghargai eksistensi mereka.", "Pembelajaran akan sangat membosankan bila guru hanya memakai metode ceramah di kelas. Paradigma berubah ke arah yang menuntut guru mengajar karena peserta didik berpartisipasi lebih aktif dan guru lebih menghargai eksistensi mereka. Salah satu model baru adalah pembelajaran berbasis bimbingan.", "confused", "cloud"],
+        [3, "Bimbingan", "Prayitno, et al. (2013)", "Bantuan agar individu mampu mengatur hidup dan membuat keputusan sendiri.", "Bimbingan adalah bantuan yang diberikan oleh seseorang yang memiliki kepribadian memadai dan terlatih baik kepada individu di setiap usia, untuk membantunya mengatur kegiatan hidup, mengembangkan pandangan hidup, membuat keputusan, dan menanggung bebannya sendiri (Prayitno, et al., 2013). Contoh: siswa bingung memilih jurusan; guru membantu mengenali minat, siswa sendiri yang memutuskan.", "think", "cmp"],
+        [4, "Masalah belajar", "Prayitno, et al. (2013)", "Sikap dan kebiasaan buruk dalam belajar.", "Masalah belajar adalah bersikap dan berkebiasaan buruk dalam belajar, seperti suka menunda-nunda tugas, mengulur-ulur waktu, membenci guru, dan tidak mau bertanya untuk hal yang tidak diketahuinya (Prayitno, et al., 2013).", "confused", "pz"],
+        [5, "Pendampingan belajar", "Rosaria dan Novika (2018)", "Bantuan ahli untuk memilih, menyesuaikan diri, dan memecahkan masalah belajar.", "Pendampingan belajar melalui bimbingan belajar adalah proses pemberian bantuan atau pertolongan, bagi individu maupun kelompok, oleh seseorang atau lebih yang memiliki keahlian di bidang tersebut, dalam menentukan pilihan, penyesuaian, serta pemecahan masalah belajar yang berkaitan dengan perubahan tingkah laku akibat pengalaman, latihan, maupun rangsangan (Rosaria dan Novika, 2018).", "mentor", "sb"],
+        [1, "Isi bab", "Empat pokok bahasan", "Pengertian, prinsip, ciri-ciri, dan rancangan model pembelajaran berbasis bimbingan.", "Bab ini membahas: (1) pengertian, (2) prinsip, (3) ciri-ciri, dan (4) rancangan model pembelajaran berbasis bimbingan. Tujuannya: menemukan definisi, menjelaskan prinsip, memberi contoh ciri-ciri, dan merancang model sesuai program studi atau mata pelajaran masing-masing.", "happy", "book"]
+      ]
+    },
+
+    /* ===== SLIDE: B.1 Pengertian ===== */
+    {
+      t: "B.1 Pengertian",
+      n: "Tiga lapis: pembelajaran, bimbingan, lalu gabungannya. Kata kunci: dua arah, berkesinambungan, kemandirian mengambil keputusan, bukan hanya kognitif.",
+      h: "B.1 <span class=\"mk\">Pengertian</span> Pembelajaran Berbasis Bimbingan",
+      s: "Pembelajaran + bimbingan = guru sebagai pembimbing",
+      i: [
+        [1, "Pembelajaran", "Sudjana (1995)", "Upaya sadar pendidik agar peserta didik dapat melaksanakan kegiatan belajar.", "Pembelajaran adalah proses transfer ilmu pengetahuan dari guru kepada peserta didik. Menurut Sudjana (1995), pembelajaran merupakan suatu upaya yang dilakukan secara sadar oleh pendidik sehingga peserta didiknya dapat melaksanakan proses kegiatan belajar.", "read", "book"],
+        [2, "Pembelajaran", "Sagala (2014)", "Penerapan asas pendidikan dan teori belajar; bersifat dua arah.", "Menurut Sagala (2014), pembelajaran merupakan penerapan asas pendidikan dan teori belajar dalam membelajarkan peserta didik. Bersifat dua arah: guru berfungsi sebagai pendidik dan peserta didik sebagai pelajar.", "read", "pencil"],
+        [3, "Kesimpulan", "Proses interaksi", "Interaksi peserta didik, pendidik, dan sumber belajar dalam lingkungan belajar.", "Pembelajaran merupakan proses interaksi antara peserta didik dengan pendidik dan sumber belajar pada suatu lingkungan belajar melalui penerapan asas-asas pendidikan dan teori belajar.", "think", "plus"],
+        [4, "Bimbingan", "Natawidjaja (1987)", "Bantuan berkesinambungan agar tercapai perkembangan yang optimal.", "Tidak sedikit peserta didik menghadapi permasalahan yang berpengaruh pada kondisi psikologis dan menghambat perkembangan belajar. Di sinilah peran guru membimbing. Bimbingan adalah upaya pemberian bantuan kepada peserta didik secara berkesinambungan dalam rangka mencapai perkembangan yang optimal (Natawidjaja, 1987).", "mentor", "cmp"],
+        [5, "Gabungan", "Muhammedi, et al. (2017)", "Guru sebagai pembimbing agar peserta didik mandiri mengambil keputusan.", "Pembelajaran berbasis bimbingan adalah proses pembelajaran dengan melibatkan guru sebagai pembimbing untuk memberikan bantuan agar peserta didik mencapai kemandirian dalam mengambil keputusan menghadapi masalah. Tidak hanya berorientasi pada kognitif, tetapi juga menghasilkan perubahan perilaku yang positif dan normatif (Muhammedi, et al., 2017).", "happy", "star"],
+        [1, "Tujuan", "Pendekatan ini bertujuan", "Membantu mengatasi kesulitan, mengembangkan potensi, dan mencapai kesejahteraan hidup.", "Pembelajaran berbasis bimbingan menggabungkan elemen-elemen bimbingan dengan proses pembelajaran. Pendekatan ini bertujuan membantu individu mengatasi kesulitan, mengembangkan potensi, dan mencapai kesejahteraan hidupnya.", "think", "bulb"]
+      ]
+    },
+
+    /* ===== SLIDE: B.2 Prinsip-prinsip ===== */
+    {
+      t: "B.2 Prinsip-prinsip",
+      n: "Biru: Muhammedi, bagaimana guru membimbing. Oranye: Hughes dan Hughes, bagaimana peserta didik belajar. Baris atas empat prinsip, baris bawah empat prinsip.",
+      h: "B.2 <span class=\"mk\">Prinsip-prinsip</span> Pembelajaran Berbasis Bimbingan",
+      s: "Biru: Muhammedi, et al. (2017), cara guru membimbing · Oranye: Hughes dan Hughes (1938), cara peserta didik belajar",
+      i: [
+        [1, "Muhammedi a", "Needs assessment", "Guru menganalisis dan mengumpulkan data sebelum mengambil keputusan.", "Didasarkan pada needs assessment. Guru akan menganalisis dan mengumpulkan data yang akan digunakan dalam pengambilan keputusan dalam proses pembelajaran dan evaluasi.", "think"],
+        [1, "Muhammedi b", "Helping relationship", "Suasana membantu: empati, keterbukaan, kehangatan psikologis, realistis.", "Dikembangkan dalam suasana membantu (helping relationship). Guru menciptakan suasana yang memungkinkan peserta didik menerima bantuan dan dukungan dengan empati, keterbukaan, kehangatan psikologis, dan realistis.", "mentor"],
+        [1, "Muhammedi c", "Memfasilitasi", "Guru mengarahkan agar peserta didik aktif mengeksplorasi diri.", "Bersifat memfasilitasi. Guru sebagai fasilitator memberikan arahan sehingga peserta didik lebih aktif mengeksplorasi diri sambil menerima bimbingan yang tepat.", "hand"],
+        [1, "Muhammedi d", "Empat learning to", "Learning to be, learn, work, dan live together.", "Berorientasi pada: learning to be (belajar untuk menjadi), learning to learn (belajar untuk belajar), learning to work (belajar untuk bekerja dan berkarier), dan learning to live together (belajar untuk hidup bersama).", "happy"],
+        [2, "Hughes a", "Sesuai potensi", "Kegiatan menarik berdasarkan potensi peserta didik.", "Peserta didik belajar melalui aktivitas yang sesuai dengan potensinya, sehingga guru perlu menyediakan kegiatan yang menarik berdasarkan potensi mereka.", "read"],
+        [2, "Hughes b", "Global dulu", "Konsep diajarkan menyeluruh, lalu unsur kompleks dianalisis.", "Peserta didik memahami konsep secara global sebelum menganalisisnya, maka guru mengajarkan konsep secara menyeluruh dan membantu menganalisis unsur-unsur yang kompleks.", "think"],
+        [2, "Hughes c", "Metode dan tempo", "Bergantung karakteristik; perhatikan kebutuhan khusus.", "Metode dan tempo pembelajaran bergantung pada karakteristik peserta didik. Guru harus memperhatikan kebutuhan khusus setiap peserta didik.", "confused"],
+        [2, "Hughes d", "Interaksi sosial", "Kemampuan berkembang lewat interaksi; beri tugas kelompok.", "Peserta didik mengembangkan kemampuan sepenuhnya melalui interaksi sosial, sehingga guru harus menyediakan tugas atau kegiatan kelompok untuk meningkatkan interaksi sosial di dalam kelas.", "happy"]
+      ]
+    },
+
+    /* ===== SLIDE: B.3 Ciri-ciri ===== */
+    {
+      t: "B.3 Ciri-ciri",
+      n: "Sepuluh ciri a sampai j menurut Kartadinata dan Dantes (1997). Baca satu per satu; klik untuk penjelasan. Reward untuk semua prestasi, bukan hadiah tanpa pencapaian.",
+      h: "B.3 <span class=\"mk\">Ciri-ciri</span> Pembelajaran Berbasis Bimbingan",
+      s: "Kartadinata dan Dantes (1997): sepuluh ciri a sampai j",
+      i: [
+        [1, "a", "Diperuntukkan bagi semua peserta didik", "", "Ciri (a): tidak ada peserta didik yang ditinggalkan; semua berhak dibimbing.", "think"],
+        [1, "b", "Memperhatikan keamanan psikologis", "", "Ciri (b): peserta didik merasa aman secara psikologis saat belajar.", "mentor"],
+        [1, "c", "Mengakui peserta didik sebagai individu bermartabat dan berkemampuan", "", "Ciri (c): peserta didik dihargai sebagai pribadi yang bermartabat dan berkemampuan.", "happy"],
+        [1, "d", "Memperlakukan sebagai individu yang unik dan sedang berkembang", "", "Ciri (d): setiap peserta didik unik dan masih dalam proses berkembang.", "think"],
+        [1, "e", "Penuh penghargaan", "", "Ciri (e): suasana belajar diwarnai penghargaan.", "happy"],
+        [3, "f", "Pemberian reward untuk semua prestasi", "", "Ciri (f): reward diberikan untuk semua prestasi peserta didik.", "happy"],
+        [3, "g", "Menghindari hukuman fisik", "", "Ciri (g): hukuman fisik dihindari.", "confused"],
+        [3, "h", "Demokratis dalam berkomunikasi", "", "Ciri (h): komunikasi guru dan peserta didik bersifat demokratis.", "hand"],
+        [3, "i", "Terarah ke segenap aspek perkembangan secara menyeluruh dan optimal", "", "Ciri (i): seluruh aspek perkembangan peserta didik dibina secara menyeluruh dan optimal.", "read"],
+        [3, "j", "Disertai sikap guru yang positif dan mendukung aktualisasi minat, potensi, kapabilitas sesuai norma", "", "Ciri (j): guru bersikap positif dan mendukung peserta didik mengaktualisasikan minat, potensi, dan kapabilitasnya sesuai norma-norma kehidupan yang dianut.", "mentor"]
+      ]
+    },
+
+    /* ===== SLIDE: B.4 Rancangan ===== */
+    {
+      t: "B.4 Rancangan",
+      n: "Harmer dan Jeremy: selaras dan beragam. Lalu tiga langkah Maryana dan Rachmawati: ruang dan alat, suasana interaksi (strategi dan komunikasi), layanan BK. Klik kartu untuk rincian lengkap.",
+      h: "B.4 <span class=\"mk\">Rancangan</span> Pembelajaran Berbasis Bimbingan",
+      s: "Perencanaan merumuskan tujuan yang diraih · Harmer dan Jeremy (2001) · tiga langkah Maryana dan Rachmawati (2013)",
+      i: [
+        [1, "Harmer a", "Keselarasan (coherence)", "Pola logis; antarunsur saling berkaitan.", "Rencana pembelajaran mempunyai pola yang logis serta keterkaitan antarunsur yang membentuk satu kesatuan. Contoh: jika ada tiga kegiatan berbeda dalam dokumen rencana, ketiganya harus saling berkaitan.", "think"],
+        [2, "Harmer b", "Keragaman (variety)", "Jenis aktivitas beragam; drill monoton menjemukan.", "Penggunaan jenis aktivitas yang berbeda. Drill atau latihan yang monoton pasti menjemukan. Untuk mencapai kompetensi diperlukan berbagai aktivitas berkesinambungan.", "confused"],
+        [3, "Langkah 1", "Ruang dan alat belajar", "Penataan ruang aman, nyaman; tata letak tidak mengundang perilaku tak diharapkan.", "1) Penataan ruang: guru mapel dan guru BK merancang ruang dan perlengkapan sesuai kebutuhan perkembangan dan belajar; pertimbangkan keamanan, kenyamanan, minat, serta kebutuhan fisik dan psikologis. 2) Tata letak: pastikan tidak mengundang perilaku yang tidak diharapkan.", "read", "plant"],
+        [4, "Langkah 2a", "Strategi pembelajaran", "Berpusat pada peserta didik dan guru; proses dan hasil; kontekstual; aktif, kreatif, senang.", "a) Berpusat pada peserta didik dan guru. b) Berorientasi pada proses dan hasil. c) Kontekstual dan responsif terhadap kondisi serta kebutuhan. d) Melibatkan peserta didik aktif, kreatif, dan senang melalui interaksi berkualitas dengan objek maupun orang lain (guru dan teman).", "hand"],
+        [5, "Langkah 2b", "Komunikasi berkualitas", "Hormat, jujur, kasih sayang, tanggung jawab, terbuka, bernalar.", "a) Saling menghormati, bukan merendahkan. b) Keaslian dan kejujuran, bukan kepura-puraan. c) Kasih sayang, bukan kekerasan. d) Tanggung jawab, bukan aturan dan hukuman yang dipaksakan. e) Penerimaan dan keterbukaan, bukan penolakan dan ketertutupan. f) Nalar dan logika sesuai kemampuan berpikir peserta didik.", "mentor"],
+        [3, "Langkah 3", "Layanan BK", "Sesuaikan perlakuan; kembangkan kemampuan; intervensi khusus.", "1) Menyesuaikan perlakuan dan lingkungan dengan kebutuhan perkembangan serta nilai keagamaan dan kultural. 2) Mengembangkan kemampuan sosial-pribadi dan belajar: keterampilan belajar, bergaul, menyelesaikan konflik. 3) Intervensi khusus bagi peserta didik yang memerlukan perhatian dan bantuan khusus. Kuncinya: kerja sama guru, pembimbing, dan peserta didik.", "happy"]
+      ]
+    },
+
+    /* ===== SLIDE: C.1 Contoh Kasus ===== */
+    {
+      t: "C.1 Contoh Kasus",
+      n: "Sampaikan faktanya apa adanya dan gunakan kata diduga. Catatan: judul berita bertanggal 8 Des 2023 sedangkan kejadian ditulis 7 Februari 2023; cek sumber asli.",
+      h: "C.1 <span class=\"mk\">Contoh Kasus</span>",
+      s: "Analisis perilaku: bocah SD di Sukabumi diduga alami bullying",
+      i: [
+        [1, "Sumber", "Berita detikNews", "Tim detikJabar, detikNews (2023).", "Judul: Bocah SD Sukabumi Diduga Alami Bully Mengerikan, Ortu Lapor Polisi. Tim detikJabar, detikNews (Jumat, 08 Des 2023 11:23 WIB). Tanggal berita dan tanggal kejadian di buku berbeda; perlu dicek ke sumber asli.", "read"],
+        [2, "Kejadian", "Diduga dirundung", "Siswa SD swasta (inisial L, 9 tahun) di Sukabumi, 7 Februari 2023.", "Seorang peserta didik SD swasta dengan inisial L (9) di Sukabumi diduga menjadi korban perundungan oleh sesama pelajar pada 7 Februari 2023.", "confused"],
+        [4, "Dampak", "Luka dan trauma", "Patah tulang lengan atas; pendampingan psikolog; enggan ke sekolah.", "Korban mengalami patah tulang lengan atas dan mendapatkan pendampingan psikolog serta enggan untuk pergi ke sekolah.", "confused"],
+        [3, "Tindak lanjut", "Dilaporkan ke polisi", "Kasat Reskrim Polres Sukabumi Kota akan memproses laporan.", "Peristiwa itu dilaporkan ke polisi. Kasat Reskrim Polres Sukabumi Kota menyatakan pihaknya akan memproses laporan itu.", "mentor"]
+      ]
+    },
+
+    /* ===== SLIDE: C.2 Analisis Kasus ===== */
+    {
+      t: "C.2 Analisis Kasus",
+      n: "Bullying berulang dan melukai fisik dan psikis. Tiga faktor menurut Amnda dkk. adalah faktor, bukan sebab-akibat pasti. Peran guru versi Adiyono dkk.",
+      h: "C.2 <span class=\"mk\">Analisis Kasus</span> Bullying",
+      s: "Pengertian, mengapa guru perlu peduli, faktor penyebab (Amnda, et al., 2020), dan peran guru (Adiyono, et al., 2022)",
+      i: [
+        [1, "Pengertian", "Apa itu bullying", "Perilaku berulang untuk mengganggu anak yang dianggap lebih lemah.", "Bullying berasal dari kata bully: gertakan atau mengganggu; ada ancaman dari pelaku terhadap korban yang menimbulkan gangguan psikis berupa stres, trauma, dan gangguan fisik atau psikis. Lebih luas: perilaku yang memberi kontrol atas tindakan berulang untuk mengganggu anak lain yang dianggap lebih lemah.", "confused"],
+        [4, "Mengapa penting", "Perlu perhatian guru", "Memengaruhi perilaku psikis dan prestasi belajar.", "Perilaku bullying harus diperhatikan guru di sekolah sebab dapat memengaruhi perilaku psikis peserta didik dalam belajar dan berakibat pada prestasi belajar.", "think"],
+        [2, "Faktor 1", "Kurang pengawasan", "Kurang pengawasan dan bimbingan etika dari guru dan petugas sekolah.", "Kurangnya pengawasan dan bimbingan etika dari para guru dan petugas sekolah (Amnda, et al., 2020).", "think"],
+        [2, "Faktor 2", "Kesenjangan", "Kesenjangan besar antara peserta didik kaya dan miskin.", "Terdapat kesenjangan besar antara peserta didik yang kaya dan yang miskin (Amnda, et al., 2020).", "think"],
+        [2, "Faktor 3", "Pola disiplin", "Terlalu kaku atau terlalu lemah; aturan tidak konsisten.", "Pola kedisiplinan yang sangat kaku ataupun terlalu lemah. Bimbingan tidak layak dan peraturan tidak konsisten membuat anak rentan melakukan bullying dan tidak berempati terhadap teman yang merasa memiliki kekuasaan.", "confused"],
+        [3, "Peran guru", "Membimbing dan membina", "Membimbing, mengarahkan, membina; penghargaan menumbuhkan motivasi.", "Guru membimbing, mengarahkan, dan membina agar peserta didik dapat mengatasi masalah bullying dan meminimalkannya. Memberi penghargaan bagi anak berprestasi juga salah satu cara: anak termotivasi, percaya diri, dan fokus belajar (Adiyono, et al., 2022).", "mentor"]
+      ]
+    },
+
+    /* ===== SLIDE: Kesimpulan ===== */
+    {
+      t: "Kesimpulan",
+      n: "Satu kartu untuk tiap bagian: pengertian, prinsip, ciri-ciri, perencanaan, langkah penerapan, harapan. Tutup dengan model ini sebagai alternatif.",
+      h: "<span class=\"mk\">Kesimpulan</span>",
+      s: "Hal. 116–117",
+      i: [
+        [1, "Pengertian", "Model berbasis bimbingan", "Guru sebagai pembimbing membantu peserta didik mandiri mengambil keputusan.", "Pembelajaran berbasis bimbingan adalah model yang melibatkan guru sebagai pembimbing yang membantu peserta didik mencapai kemandirian dalam pengambilan keputusan. Didasarkan pada asesmen kebutuhan, suasana yang mendukung, memfasilitasi, dan berorientasi pada berbagai aspek belajar.", "think", "cmp"],
+        [2, "Prinsip", "Prinsip efektif", "Aktivitas sesuai kecenderungan, konsep menyeluruh dulu, metode dan tempo disesuaikan, interaksi sosial.", "Pembelajaran efektif terjadi ketika peserta didik terlibat dalam aktivitas yang sesuai kecenderungan alamiah, memahami konsep secara menyeluruh sebelum menganalisisnya, serta metode dan tempo disesuaikan dengan kebutuhan mental individu. Interaksi sosial juga komponen penting.", "read", "book"],
+        [3, "Ciri-ciri", "Untuk semua peserta didik", "Aman secara psikologis, penuh penghargaan, tanpa hukuman fisik, demokratis, menyeluruh.", "Diperuntukkan semua peserta didik; memperhatikan keamanan psikologis; mengakui peserta didik bermartabat, berkemampuan, unik, dan berkembang; penuh penghargaan atas semua prestasi; menghindari hukuman fisik; pendekatan demokratis; terarah pada segenap aspek perkembangan; disertai sikap guru yang positif.", "hand", "star"],
+        [4, "Perencanaan", "Kunci kesuksesan", "Rencana efektif: selaras (coherence) dan beragam (variety).", "Perencanaan yang baik menjadi kunci kesuksesan. Rencana efektif harus selaras (coherence): menekankan keterkaitan antarunsur, dan beragam (variety): berbagai jenis aktivitas untuk mempertahankan dan meningkatkan minat dan pembelajaran.", "think", "pencil"],
+        [5, "Penerapan", "Tiga langkah", "Ruang dan alat belajar, suasana interaksi sehat, layanan BK.", "Dapat diimplementasikan melalui langkah: mendesain ruang dan alat belajar sesuai kebutuhan, menciptakan suasana interaksi yang sehat, serta menyediakan layanan bimbingan dan konseling. Dengan kerja sama guru, pembimbing, dan peserta didik tercipta lingkungan belajar yang optimal dan mendukung perkembangan secara menyeluruh.", "mentor", "plant"],
+        [1, "Harapan", "Guru menerapkannya", "Alternatif model sesuai karakteristik peserta didik, tujuan, dan materi ajar.", "Diharapkan guru dapat menerapkan dan menjalankan model ini sebagai alternatif model pembelajaran dengan menyesuaikan karakteristik peserta didik dengan tujuan pembelajaran serta materi ajar melalui metode pembelajaran yang tepat.", "happy", "cap"]
+      ]
+    },
+
+    /* ===== SLIDE: Rangkuman ===== */
+    {
+      t: "Rangkuman",
+      n: "Tiga kartu: integrasi holistik dan humanistik, peran guru, analisis perilaku. Ini penutup materi sebelum tanya jawab.",
+      h: "<span class=\"mk\">Rangkuman</span>",
+      s: "Hal. 117",
+      i: [
+        [1, "Pendekatan", "Holistik dan humanistik", "Integrasi pembelajaran dan layanan bimbingan; peserta didik subjek aktif.", "Bab ini menekankan pentingnya integrasi antara proses pembelajaran dan layanan bimbingan dalam menciptakan pendidikan yang holistik dan humanistik. Pembelajaran berbasis bimbingan menempatkan peserta didik sebagai subjek aktif sekaligus individu yang perlu dibimbing memahami diri, mengembangkan potensi, dan mengatasi hambatan belajar maupun kehidupan.", "think", "cmp"],
+        [3, "Peran guru", "Fasilitator, motivator, pembimbing", "Guru tidak hanya menyampaikan materi; peka pada kebutuhan emosional, sosial, akademik.", "Guru tidak hanya menyampaikan materi pelajaran, tetapi juga berperan sebagai fasilitator, motivator, dan pembimbing yang sensitif terhadap kebutuhan emosional, sosial, dan akademik peserta didik. Memperhatikan keunikan individu serta berorientasi pada perkembangan optimal.", "mentor", "cap"],
+        [5, "Analisis perilaku", "Intervensi tepat sasaran", "Guru memahami pola belajar, kendala psikologis, dan potensi.", "Analisis perilaku peserta didik menjadi salah satu komponen penting karena memungkinkan guru memahami pola perilaku belajar, kendala psikologis, dan potensi yang dapat dikembangkan, sehingga guru dapat merancang intervensi pembelajaran yang lebih tepat sasaran dan bersifat personal.", "read", "bulb"]
+      ]
+    },
+
+    /* ===== SLIDE: Referensi ===== */
+    {
+      t: "Referensi",
+      n: "Referensi yang dikutip di dalam teks buku. Daftar pustaka lengkap tidak ada di halaman yang diunggah. Kode huruf menunjukkan sub bab yang memakainya.",
+      h: "<span class=\"mk\">Referensi</span>",
+      s: "Dikutip dalam teks buku · kode di akhir kartu menunjukkan sub bab yang memakainya",
+      i: [
+               [1, "Sumber utama", "Buku Psikologi Pendidikan dan Bimbingan", "Bab 8 · hal. 107–117 · sumber seluruh materi", "Bab 8 · hal. 107–117 · sumber seluruh materi.", "read", "book"],
+        [2, "1999", "Prayitno dan Amti", "Bimbingan, masalah belajar · A", "Prayitno & Erman Amti. (1999). Dasar-Dasar Bimbingan dan Konseling. Jakarta: Rineka Cipta. · Dipakai di: bimbingan dan masalah belajar (A).", "read", "cmp"],
+        [3, "2018", "Rosaria dan Novika", "Pendampingan belajar · A", "Rosaria, D. & H. Novika. (2018). “Bimbingan Belajar Bahasa Inggris Bagi Anak Usia Sekolah Dasar (6-12 Tahun) di Desa Semangat dalam RT 31 Handil Bhakti”. Jurnal Pengabdian Al-Ikhlas Universitas Islam Kalimantan Muhammad Arsyad Al Banjary, 2(2), 13-19. · Dipakai di: pendampingan belajar (A).", "read", "sb"],
+        [4, "1995", "Sudjana", "Pengertian pembelajaran · B.1", "Sudjana, N. (1995). Penilaian Hasil Proses Belajar Mengajar. PT Remaja Rosdakarya. · Dipakai di: pengertian pembelajaran (B.1).", "read", "pencil"],
+        [5, "2014", "Sagala", "Pembelajaran dua arah · B.1", "Sagala, S. (2014). Konsep dan Makna Pembelajaran untuk Membantu Memecahkan Problematika Belajar dan Mengajar. Alfabeta. · Dipakai di: pembelajaran dua arah (B.1).", "read", "pencil"],
+        [1, "1987", "Natawidjaja", "Pengertian bimbingan · B.1", "Natawidjaja, R. (1987). Program dan Bimbingan Penyuluhan di Sekolah. Depdikbud. · Dipakai di: pengertian bimbingan (B.1).", "read", "cmp"],
+        [2, "2017", "Muhammedi, et al.", "Model dan prinsip a–d · B.1, B.2", "Muhammedi, Elfidayati, Kamaliah, Z. Dahlan, M. S. A. Lubis, M. Albina., Faisal A., & L. Hanum. (2017). Bimbingan dan Konseling dalam Menyiapkan Generasi Bangsa yang Berkarakter. Larispa Indonesia. · Dipakai di: model dan prinsip a–d (B.1, B.2).", "read", "bulb"],
+        [3, "1938", "Hughes dan Hughes", "Prinsip a–d · B.2", "Hughes, A. G. & E. H. Hughes. (1938). Learning and Teaching. Longman's Green and Co. · Dipakai di: prinsip a–d (B.2).", "read", "star"],
+        [4, "1997", "Kartadinata dan Dantes", "Sepuluh ciri a–j · B.3", "Kartadinata, S. & N. Dantes. (1997). Landasan-Landasan Pendidikan Sekolah Dasar. Dirjen Dikti. · Dipakai di: sepuluh ciri a–j (B.3).", "read", "plus"],
+        [5, "2001", "Harmer dan Jeremy", "Coherence dan variety · B.4", "Harmer & Jeremy. (2001). The Practice of English Language Teaching. Longman. · Dipakai di: coherence dan variety (B.4).", "read", "cap"],
+        [1, "2013", "Maryana dan Rachmawati", "Tiga langkah penerapan · B.4", "Maryana, R. & Y. Rachmawati. (2013). Pengelolaan Lingkungan Belajar. Prenada Media. · Dipakai di: tiga langkah penerapan (B.4).", "read", "plant"],
+        [2, "2020", "Amnda, et al.", "Faktor penyebab bullying · C.2", "Amnda, V., dkk. (2020). “Bentuk dan Dampak Perilaku Bullying Terhadap Peserta Didik”. Jurnal Kepemimpinan dan Pengurusan Sekolah, 5(1), 19-32. · Dipakai di: faktor penyebab bullying (C.2).", "read", "cloud"],
+        [3, "2022", "Adiyono, et al.", "Peran guru atasi bullying · C.2", "Adiyono, A., I. Irvan, & R. Rusanti. (2022). “Peran Guru dalam Mengatasi Perilaku Bullying”. Al-Madrasah: Jurnal Ilmiah Pendidikan Madrasah Ibtidaiyah, 6(3), 649-658. · Dipakai di: peran guru mengatasi bullying (C.2).", "read", "bulb"],
+        [4, "2023", "detikNews", "Contoh kasus Sukabumi · C.1", "Tim detikJabar. (2023, 8 Desember). Bocah SD Sukabumi Diduga Alami Bully Mengerikan, Ortu Lapor Polisi. detikNews. https://news.detik.com/berita/d-7078660/bocah-sd-sukabumi-diduga-alami-bully-mengerikan-ortu-lapor-polisi · Dipakai di: contoh kasus Sukabumi (C.1).", "read", "book"]
+      ]
+    }
+  ],
+
+  /* ===== SLIDE: Latihan analisis (kuis) ===== */
+  latihan: {"n": "Latihan interaktif, soalnya dibuat penyusun (analisis), bukan dari PDF. Minta audiens menjawab dulu, baru klik. Jawaban B sesuai faktor pengawasan dan kedisiplinan dari Amnda dkk. Tombol Next tetap bisa dipakai tanpa menjawab.", "h": "<span class=\"mk\">Latihan</span> analisis", "s": "Soal buatan penyusun berdasarkan faktor dari Amnda, et al. (2020)", "q": "Sebuah sekolah punya aturan sangat kaku, tetapi jarang ditegakkan secara konsisten dan guru jarang mengawasi. Faktor bullying yang paling berkaitan adalah...", "o": [["0", "A. Kesenjangan antara siswa kaya dan miskin"], ["1", "B. Kurang pengawasan dan pola kedisiplinan yang tidak tepat"], ["0", "C. Kurangnya penghargaan bagi anak berprestasi"]], "fb": "Jawaban B: Amnda, et al. (2020) menyebut kurang pengawasan dan disiplin yang terlalu kaku/lemah serta aturan tidak konsisten sebagai faktor.", "ok": "✓ Benar. ", "no": "✗ Belum tepat. "},
+
+  /* ===== SLIDE: Terima Kasih (src = path video, jangan diubah) ===== */
+  terima: {"n": "Ucapkan terima kasih, lalu video penutup otomatis diputar. Bisa diputar ulang dengan tombol play. Buka sesi tanya jawab.", "h": "Terima <span>Kasih</span>", "p": "Sekian presentasi dari kami, bila ada yang bertanya kami akan memberi jawaban bukan harapan,karena kami di sini presentasi bukan mengisi hati yang sunyi..", "bm": "Silakan bertanya atau memberi masukan.", "stk": "✦ SAMPAI JUMPA", "src": "terima kasih.mp4"},
+
+  start: "Bab 8 · Psikologi Pendidikan dan Bimbingan",
+  keys: "Tombol: ← → Spasi · F layar penuh · N catatan · Home/End"
+};
+
+// ===== JS 1. PEMBANTU =====
+const $ = id => document.getElementById(id), Q = (s, r = document) => r.querySelector(s), QA = (s, r = document) => [...r.querySelectorAll(s)], p2 = n => String(n).padStart(2, '0');
+
+// ===== JS 2. KARAKTER CLAY: kid('t',ekspresi)=guru, kid('s',ekspresi)=murid =====
+const kid = (r, e) => {
+    const T = r == 't', B = T ? '#416D83' : '#E9A16B', H = T ? '#4A3328' : '#172D50', st = 'stroke="#172D50" stroke-width="2.5" fill="none" stroke-linecap="round"', mo = e == 'happy' ? '<path d="M42 49q8 9 16 0z" fill="#fff" stroke="#172D50" stroke-width="2.5" stroke-linejoin="round"/>' : e == 'confused' ? `<path d="M43 53q4-4 7 0t7 0" ${st}/>` : `<path d="M44 51q6 6 12 0" ${st}/>`, ex = { read: '<use href="#book" x="24" y="72" width="52" height="48"/>', think: '<use href="#bulb" x="64" y="-12" width="40" height="40"/>', hand: '<path class="wv" d="M72 76l16-30" stroke="#F1C9A5" stroke-width="10" stroke-linecap="round"/>', happy: '<use href="#star" x="66" y="4" width="28" height="28"/>', confused: '<text x="70" y="24" font-size="30" font-weight="800" fill="#E9A16B" font-family="Fraunces,serif">?</text>', mentor: '<path class="wv" d="M72 76l14-22" stroke="#F1C9A5" stroke-width="10" stroke-linecap="round"/>' }[e] || '';
+    return `<svg viewBox="0 0 100 130" class="kid ${T ? 't' : 'u'}" aria-hidden="true"><g class="bd"><g filter="url(#cl)"><rect x="24" y="60" width="52" height="58" rx="24" fill="${B}"/><circle cx="50" cy="38" r="25" fill="#F1C9A5"/><path d="M25 38a25 25 0 0 1 50 0c-9-3-16-9-20-16-6 8-18 13-30 16z" fill="${H}"/></g>${T ? '<path d="M42 62l8 11 8-11z" fill="#F7F5EF"/><g fill="none" stroke="#172D50" stroke-width="2"><circle cx="42" cy="42" r="7"/><circle cx="58" cy="42" r="7"/><path d="M49 42h2"/></g>' : ''}<g class="ey"><circle cx="42" cy="42" r="3" fill="#172D50"/><circle cx="58" cy="42" r="3" fill="#172D50"/></g><circle cx="35" cy="50" r="4" fill="#E9A16B" opacity=".6"/><circle cx="65" cy="50" r="4" fill="#E9A16B" opacity=".6"/>${mo}${ex}</g></svg>`;
+};
+
+// ===== JS 3. PETA SLIDE: tema (dk gelap / sd sand), jenis layout, ikon judul =====
+const role = e => e == 'mentor' || e == 'hand' ? 't' : 's';
+const CF = { 'Tujuan dan Materi': ['sd', 'map', 'bulb'], 'A. Pendahuluan': ['', 'acc', 'book'], 'B.1 Pengertian': ['dk', 'eq', 'cmp'], 'B.2 Prinsip-prinsip': ['', 'hub2', 'plus'], 'B.3 Ciri-ciri': ['sd', 'tabs', 'fp'], 'B.4 Rancangan': ['', 'flow', 'clip', [[0, 1], [2], [3, 4], [5]]], 'C.1 Contoh Kasus': ['dk', 'time', 'mag'], 'C.2 Analisis Kasus': ['sd', 'flow', 'node', [[0, 1], [2, 3, 4], [5]]], 'Kesimpulan': ['dk', 'tabsv', 'stk'], 'Rangkuman': ['', 'kn', 'star'], 'Referensi': ['sd', 'refs', 'book'] };
+const S = [{ t: 'Judul', n: D.judul.n, L: 'hero', th: 'dk' }];
+D.slides.forEach(x => { if (x.t == 'Referensi')
+    S.push({ t: 'Latihan analisis', n: D.latihan.n, L: 'quiz', th: '', h: D.latihan.h, s: D.latihan.s, ic: 'pencil' }); const c = CF[x.t]; S.push({ t: x.t, n: x.n, h: x.h, s: x.s, d: x, th: c[0], L: c[1], ic: c[2], g: c[3] }); });
+S.push({ t: 'Terima Kasih', n: D.terima.n, L: 'end', th: 'dk' });
+
+// ===== JS 4. KOMPONEN KARTU =====
+const card = x => `${x[6] ? `<svg class="ic" aria-hidden="true"><use href="#${x[6]}"/></svg>` : ''}<span class="lb">${x[1]}</span><h3>${x[2]}</h3>${x[3] ? `<p>${x[3]}</p>` : ''}`;
+const bt = (k, j, cl = '') => { const x = S[k].d.i[j]; return `<button class="it k${x[0]} ${cl}" data-o="${k}.${j}" aria-haspopup="dialog">${card(x)}</button>`; };
+
+// ===== JS 5. LAYOUT TIAP SLIDE (hero, map, acc, eq, hub2, tabs, flow, time, kn, quiz, refs, end) =====
+const R = {
+    hero: () => `
+        <div>
+          <h1 class="rise">${D.judul.h}</h1>
+          <p class="sub rise" style="animation-delay:.15s">${D.judul.p}</p>
+          <p class="src rise" style="animation-delay:.3s">${D.judul.src}</p>
+        </div>
+        <div class="stage rise" style="animation-delay:.2s">
+          <div class="disc"></div>${kid('t', 'hand')}${kid('s', 'read')}<svg class="fo" style="left:0;top:3rem"><use href="#sb"/></svg><svg class="fo" style="right:2rem;top:0;animation-delay:-2s"><use href="#bulb"/></svg><svg class="fo" style="right:0;top:13rem;animation-delay:-3s;width:5rem;height:5rem"><use href="#cap"/></svg>
+        </div>`,
+    map: k => `
+        <div class="map">${[0, 1, 2].map(c => `
+          <div class="mc">${bt(k, c)}<i></i>${bt(k, c + 3)}</div>`).join('')}
+        </div>`,
+    acc: k => `
+        <div class="acw">
+          <div class="art">${kid('t', 'mentor')}${kid('s', 'think')}</div>
+          <div class="ac">${S[k].d.i.map((x, j) => `
+            <div class="ar k${x[0]}${j ? '' : ' on'}">
+              <button class="ah" aria-expanded="${!j}" data-a="1"><span class="lb">${x[1]}</span><b>${x[2]}</b><em>${x[3]}</em></button>
+              <p class="ab">${x[4] || x[3]}</p>
+            </div>`).join('')}
+          </div>
+        </div>`,
+    eq: k => `
+        <div class="eq">
+          <div class="e1">${bt(k, 0)}${bt(k, 1)}${bt(k, 2)}</div><i class="op" aria-hidden="true">+</i>
+          <div class="e2">${bt(k, 3)}</div><i class="op" aria-hidden="true">=</i>
+          <div class="e3">${bt(k, 4)}</div>
+        </div>
+        <div class="eb">${bt(k, 5)}</div>`,
+    hub2: k => `
+        <div class="sp2">${[0, 4].map(o => `
+          <div class="sp">
+            <div class="orb">${S[k].d.i[o][1].split(' ')[0]}</div>${[0, 1, 2, 3].map(j => bt(k, o + j, 'pill')).join('')}
+          </div>`).join('')}
+        </div>`,
+    tabs: (k, s, v) => `
+        <div class="tb${v ? ' v' : ''}" data-s="${k}">
+          <div class="tl" role="tablist">${S[k].d.i.map((x, j) => `
+            <button role="tab" class="tt" data-t="${j}" aria-label="${x[1]}. ${x[2]}">${v ? `<span class="lb">${x[1]}</span>${x[2]}` : x[1]}</button>`).join('')}
+          </div>
+          <div class="tp" role="tabpanel" aria-live="polite"></div>
+        </div>`,
+    tabsv: (k, s) => R.tabs(k, s, 1),
+    flow: k => `
+        <div class="fw">${S[k].g.map((c, n) => `${n ? '<i aria-hidden="true">›</i>' : ''}
+          <div class="fc">${c.map(j => bt(k, j)).join('')}</div>`).join('')}
+        </div>`,
+    time: k => { const i = S[k].d.i; return `
+        <div class="tm">
+          <aside class="src2 k1"><svg aria-hidden="true"><use href="#mag"/></svg><span class="lb">${i[0][1]}</span><h3>${i[0][2]}</h3>
+            <p><b>${i[0][3]}</b></p>
+            <p>${i[0][4]}</p>
+          </aside>
+          <ol class="tl2">${[1, 2, 3].map(j => `
+            <li><span class="lb k${i[j][0]}">${i[j][1]}</span><h3>${i[j][2]}</h3>
+              <p class="ld">${i[j][3]}</p>
+              <p>${i[j][4]}</p>
+            </li>`).join('')}
+          </ol>
+        </div>`; },
+    kn: k => `
+        <div class="kn"><svg class="big ic" aria-hidden="true"><use href="#stk"/></svg>${[0, 1, 2].map(j => bt(k, j)).join('')}</div>`,
+    quiz: () => `
+        <div class="qz">
+          <div class="qb">${kid('t', 'think')}
+            <p class="bub">${D.latihan.q}</p>
+          </div>
+          <div class="qo" id="q">${D.latihan.o.map(([ok, t]) => `
+            <button data-ok="${ok}">${t}</button>`).join('')}
+          </div>
+          <p id="fb" aria-live="polite"></p>
+        </div>`,
+    refs: k => `<ul class="rf2">${S[k].d.i.map((x, j) => `<li>${bt(k, j, 'k' + x[0]).replace(/<svg.*?<\/svg>|<span class="lb">.*?<\/span>|<h3>.*?<\/h3><p>.*?<\/p>/g, '')
+        .replace('>', `><b class="yr">${x[1]}</b><span><strong>${x[2]}</strong><em>${x[3]}</em></span>`)}</li>`).join('')}</ul><p class="fn">${S[k].d.i[0][4].slice(S[k].d.i[0][4].indexOf('Daftar pustaka'))}</p>`,
+    end: () => { const t = D.terima; return `
+        <div class="en">
+          <div>
+            <h1>${t.h}</h1>
+            <p>${t.p}</p>
+            <div class="bm">${t.bm}</div>
+          </div>
+          <div class="vf"><video controls playsinline preload="auto"><source src="${t.src}" type="video/mp4"></video><span class="stk">${t.stk}</span></div>
+        </div>`; }
+};
+
+// ===== JS 6. RAKIT SEMUA SLIDE =====
+$('deck').innerHTML = S.map((s, k) => `<section class="s ${s.th} ${s.L == 'hero' ? 'hero' : ''}" id="s${k}" aria-label="${s.t}">${s.h ? `<header class="hd">${s.ic ? `<svg class="hi" aria-hidden="true"><use href="#${s.ic}"/></svg>` : ''}<h2>${s.h}<small>${s.s}</small></h2></header>` : ''}${R[s.L](k, s)}</section>`).join('');
+const SC = QA('.s'), M = $('menu');
+let cur = 0, started = false, Z = 1;
+M.innerHTML = S.map((s, i) => `<button data-g="${i}">Slide ${p2(i + 1)} — ${s.t}</button>`).join('');
+$('wk').innerHTML = `<div id="wm">${kid('t', 'mentor')}</div><div id="ws">${kid('s', 'happy')}</div>`;
+
+// ===== JS 7. TAB =====
+function tabSel(tb, j) {
+    const x = S[tb.dataset.s].d.i[j], p = Q('.tp', tb);
+    QA('.tt', tb).forEach((b, n) => { b.setAttribute('aria-selected', n == j); b.tabIndex = n == j ? 0 : -1; });
+    p.className = 'tp k' + x[0];
+    p.innerHTML = `<div><span class="lb">${x[1]}</span><h3>${x[2]}</h3>${x[3] && x[4] && x[3] !== x[4] ? `<p class="ld">${x[3]}</p>` : ''}<p>${x[4] || x[3]}</p></div>${kid(role(x[5]), x[5])}`;
+}
+QA('.tb').forEach(tb => tabSel(tb, 0));
+
+// ===== JS 8. PINDAH SLIDE =====
+function show(i) {
+    i = Math.max(0, Math.min(S.length - 1, i));
+    SC.forEach((s, k) => s.classList.toggle('on', k == i));
+    cur = i;
+    M.classList.remove('on');
+    $('mb').setAttribute('aria-expanded', 'false');
+    $('pr').textContent = p2(i + 1) + ' / ' + p2(S.length);
+    $('notes').textContent = 'Catatan presenter: ' + S[i].n;
+    const p = i / (S.length - 1);
+    $('fill').style.width = p * 100 + '%';
+    $('trk').setAttribute('aria-valuenow', Math.round(p * 100));
+    $('ws').style.left = `calc(${p * 96}% )`;
+    $('wm').style.left = `calc(${p * 96}% - ${.6 + p * 4.5}rem)`;
+    QA('button', M).forEach((b, k) => b.classList.toggle('cur', k == i));
+    QA('video', $('deck')).forEach(v => v.pause());
+    const v = Q('video', SC[i]);
+    if (v) {
+        v.currentTime = 0;
+        v.play().catch(() => { });
+    }
+    if (document.activeElement)
+        document.activeElement.blur();
+}
+const go = d => { if (started)
+    show(cur + d); };
+
+// ===== JS 9. JENDELA DETAIL KARTU =====
+function openM(b) {
+    const [k, j] = b.dataset.o.split('.'), x = S[k].d.i[j];
+    window.lastB = b;
+    $('ml').textContent = x[1];
+    $('ml').className = 'lb k' + x[0];
+    $('mt').textContent = x[2];
+    $('mk').innerHTML = kid(role(x[5]), x[5] || 'think');
+    $('mbd').innerHTML = (x[3] && x[4] && x[3] !== x[4] ? `<h4>Ringkasan</h4><p>${x[3]}</p>` : '') + `<h4>${x[4] ? 'Penjelasan lengkap' : 'Penjelasan'}</h4><p>${x[4] || x[3]}</p>`;
+    $('ov').classList.add('on');
+    $('mx').focus();
+}
+function closeM() { if ($('ov').classList.contains('on')) {
+    $('ov').classList.remove('on');
+    window.lastB && window.lastB.focus();
+} }
+
+// ===== JS 10. KLIK: kartu, tab, accordion, menu, kuis =====
+document.addEventListener('click', e => {
+    const t = e.target;
+    let b;
+    if (b = t.closest('[data-o]'))
+        return openM(b);
+    if (b = t.closest('.tt'))
+        return tabSel(b.closest('.tb'), +b.dataset.t);
+    if (b = t.closest('.ah')) {
+        const r = b.parentElement, o = r.classList.contains('on');
+        QA('.ar', r.parentElement).forEach(a => { a.classList.remove('on'); Q('.ah', a).setAttribute('aria-expanded', 'false'); });
+        if (!o) {
+            r.classList.add('on');
+            b.setAttribute('aria-expanded', 'true');
+        }
+        return;
+    }
+    if (b = t.closest('[data-g]')) {
+        show(+b.dataset.g);
+        return;
+    }
+    if (t.closest('#ov') && (t.id == 'ov' || t.closest('#mx,#mc')))
+        closeM();
+    const q = t.closest('#q button');
+    if (q && !q.disabled) {
+        const ok = q.dataset.ok == '1';
+        QA('#q button').forEach(x => { x.disabled = true; if (x.dataset.ok == '1')
+            x.classList.add('ok'); });
+        if (!ok)
+            q.classList.add('no');
+        $('fb').textContent = (ok ? D.latihan.ok : D.latihan.no) + D.latihan.fb;
+    }
+});
+$('nx').onclick = () => go(1);
+$('pv').onclick = () => go(-1);
+
+// ===== JS 11. TOMBOL BAR BAWAH =====
+const fsT = () => { try {
+    document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+}
+catch (e) { } };
+$('fs').onclick = fsT;
+const mT = () => { const o = M.classList.toggle('on'); $('mb').setAttribute('aria-expanded', o); }, nT = () => $('notes').classList.toggle('on'), rT = () => { const o = document.body.classList.toggle('rm'); $('rmb').setAttribute('aria-pressed', o); }, zz = d => { Z = Math.max(.8, Math.min(1.3, Z + d)); document.documentElement.style.setProperty('--z', Z); };
+$('mb').onclick = mT;
+$('nb').onclick = nT;
+$('rmb').onclick = rT;
+$('zp').onclick = () => zz(.08);
+$('zm').onclick = () => zz(-.08);
+if (matchMedia('(prefers-reduced-motion:reduce)').matches) {
+    document.body.classList.add('rm');
+    $('rmb').setAttribute('aria-pressed', 'true');
+}
+
+// ===== JS 12. OPENING: video, satu kata, diskusi, judul =====
+$('keys').textContent = D.keys;
+let st = 0;
+function stage(n) { st = n; if (document.activeElement)
+    document.activeElement.blur(); QA('.st').forEach((e, i) => e.classList.toggle('on', i == n)); const v = $('v1'); if (n == 1) {
+    v.play().catch(() => { });
+}
+else
+    v.pause(); if (n == 4)
+    setTimeout(endIntro, 2400); }
+function endIntro() { const i = $('in'); if (!i || i.classList.contains('out'))
+    return; started = true; show(0); i.classList.add('out'); setTimeout(() => i.remove(), 1000); }
+$('go').onclick = () => { fsT(); stage(1); };
+$('v1').onended = () => stage(2);
+$('sk').onclick = () => stage(2);
+$('v1').querySelector('source').onerror = () => { $('vm').hidden = false; };
+$('v1').onclick = e => e.target.paused ? e.target.play() : e.target.pause();
+
+// ===== JS 13. KEYBOARD =====
+addEventListener('keydown', e => {
+    const k = e.key, tg = e.target;
+    if (!started) {
+        if ([' ', 'Enter', 'ArrowRight'].includes(k) && st >= 2 && st < 4) {
+            e.preventDefault();
+            stage(st + 1);
+        }
+        return;
+    }
+    if ($('ov').classList.contains('on')) {
+        if (k == 'Escape')
+            closeM();
+        else if (k == 'Tab') {
+            const f = [$('mx'), $('mc')], i = f.indexOf(document.activeElement);
+            e.preventDefault();
+            f[(i + (e.shiftKey ? -1 : 1) + 2) % 2].focus();
+        }
+        return;
+    }
+    if (tg.closest('[role=tablist]') && (k == 'ArrowLeft' || k == 'ArrowRight')) {
+        e.preventDefault();
+        const tb = tg.closest('.tb'), n = QA('.tt', tb).length, j = (+tg.dataset.t + (k == 'ArrowRight' ? 1 : -1) + n) % n;
+        tabSel(tb, j);
+        QA('.tt', tb)[j].focus();
+        return;
+    }
+    if (tg.closest('button,video') && (k == ' ' || k == 'Enter'))
+        return;
+    if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(k)) {
+        e.preventDefault();
+        go(1);
+    }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(k)) {
+        e.preventDefault();
+        go(-1);
+    }
+    else if (k == 'Home')
+        show(0);
+    else if (k == 'End')
+        show(S.length - 1);
+    else if (k == 'f' || k == 'F')
+        fsT();
+    else if (k == 'n' || k == 'N')
+        nT();
+    else if (k == 'm' || k == 'M')
+        mT();
+    else if (k == 'r' || k == 'R')
+        rT();
+    else if (k == '+' || k == '=')
+        zz(.08);
+    else if (k == '-')
+        zz(-.08);
+    else if (k == 'Escape')
+        M.classList.remove('on');
+});
+</script>
+</body>
+</html>
