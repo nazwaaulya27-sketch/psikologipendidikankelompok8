@@ -8,7 +8,7 @@
 3. WARNA     : cari "CSS 1. DASAR" lalu ubah variabel --n --m --c --s --iv.
 4. LAYOUT    : cari "JS 5. LAYOUT" (satu fungsi per jenis layout); peta slide ke layout ada di "JS 3. PETA SLIDE".
 5. VIDEO     : pembuka = <source src="shortmovie.mp4"> di bagian OPENING; penutup = "terima kasih.mp4" di DATA (terima.src).
-6. TOMBOL    : panah/spasi = pindah, F layar penuh, N catatan, M menu, + - ukuran huruf, R kurangi gerak, Home/End, Esc tutup jendela.
+6. TOMBOL    : ketuk layar = lanjut di bagian pembuka; tombol ‹ › di bawah atau geser layar = pindah slide (di HP putar ke landscape), F layar penuh, N catatan, M menu, + - ukuran huruf, R kurangi gerak, Home/End, Esc tutup jendela.
 ======================================
 -->
 <head>
@@ -1162,6 +1162,33 @@ p {
     transition:none!important;
   }
 }
+
+/* ===== CSS 9. HP / LAYAR SENTUH: petunjuk landscape dan tombol bawah lebih besar ===== */
+#rot { display:none; }
+@media (orientation:portrait) and (max-width:900px) {
+  #rot {
+    position:fixed;
+    inset:0;
+    z-index:200;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    background:#0D1B31;
+    color:#F7F5EF;
+    text-align:center;
+    padding:32px;
+    font:700 18px/1.4 'Plus Jakarta Sans',system-ui,sans-serif;
+  }
+  #rot b { font-size:56px; }
+}
+@media (pointer:coarse) {
+  #hud { height:44px; }
+  .s,
+  #ov { inset:0 0 44px; }
+  #hud button { height:34px; min-width:42px; }
+}
 </style>
 </head>
 <body>
@@ -1231,14 +1258,16 @@ p {
 <button id="zm" aria-label="Perkecil huruf">A−</button><button id="zp" aria-label="Perbesar huruf">A+</button>
 <button id="fs" aria-label="Layar penuh (F)"><svg viewBox="0 0 48 48"><use href="#i-fs"/></svg></button></div>
 
+<div id="rot"><b>⟳</b><span>Putar HP ke mode landscape (miring) supaya slide tampil penuh.</span></div>
+
 <!-- ===== OPENING: 0 mulai, 1 video, 2 satu kata, 3 diskusi, 4 judul ===== -->
 <div id="in"><div class="st on" id="st0"><button id="go">Mulai presentasi</button><p id="keys"></p></div>
 
   <div class="st vd" id="st1"><video id="v1" playsinline preload="auto"><source src="shortmovie.mp4" type="video/mp4"></video><div id="vm" hidden>Video pembuka belum ditemukan. Simpan video bullying dengan nama shortmovie.mp4 di folder yang sama dengan file ini, lalu muat ulang. Tekan Lewati untuk lanjut.</div><button id="sk">Lewati ›</button></div>
 
-  <div class="st" id="st2"><h1>Satu kata buat video tadi, apa?</h1><p>Spasi untuk lanjut</p></div>
+  <div class="st" id="st2"><h1>Satu kata buat video tadi, apa?</h1><p>Ketuk layar untuk lanjut ›</p></div>
 
-  <div class="st" id="st3"><h1>Menurut kalian, anak yang bikin masalah itu butuh dihukum atau dibimbing? Atau dua-duanya?</h1><p>Spasi untuk lanjut</p></div>
+  <div class="st" id="st3"><h1>Menurut kalian, anak yang bikin masalah itu butuh dihukum atau dibimbing? Atau dua-duanya?</h1><p>Ketuk layar untuk lanjut ›</p></div>
 
   <div class="st" id="st4"><h1>PEMBELAJARAN BERBASIS BIMBINGAN</h1></div></div>
 <script>
@@ -1444,7 +1473,7 @@ const D = {
   terima: {"n": "Ucapkan terima kasih, lalu video penutup otomatis diputar. Bisa diputar ulang dengan tombol play. Buka sesi tanya jawab.", "h": "Terima <span>Kasih</span>", "p": "Sekian presentasi dari kami, bila ada yang bertanya kami akan memberi jawaban bukan harapan,karena kami di sini presentasi bukan mengisi hati yang sunyi..", "bm": "Silakan bertanya atau memberi masukan.", "stk": "✦ SAMPAI JUMPA", "src": "terima kasih.mp4"},
 
   start: "Bab 8 · Psikologi Pendidikan dan Bimbingan",
-  keys: "Tombol: ← → Spasi · F layar penuh · N catatan · Home/End"
+  keys: "Ketuk layar untuk lanjut · tombol ‹ › di bawah untuk pindah slide · HP: geser layar"
 };
 
 // ===== JS 1. PEMBANTU =====
@@ -1685,6 +1714,16 @@ function endIntro() { const i = $('in'); if (!i || i.classList.contains('out'))
 $('go').onclick = () => { fsT(); stage(1); };
 $('v1').onended = () => stage(2);
 $('sk').onclick = () => stage(2);
+QA('#st2,#st3').forEach(e => e.addEventListener('click', () => { if (!started && st >= 2 && st < 4) stage(st + 1); }));
+let tx = 0, ty = 0;
+addEventListener('touchstart', e => { const t = e.changedTouches[0]; tx = t.clientX; ty = t.clientY; }, { passive: true });
+addEventListener('touchend', e => {
+    if (!started || $('ov').classList.contains('on') || e.target.closest('video,#hud,#ov'))
+        return;
+    const t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty;
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5)
+        go(dx < 0 ? 1 : -1);
+}, { passive: true });
 $('v1').querySelector('source').onerror = () => { $('vm').hidden = false; };
 $('v1').onclick = e => e.target.paused ? e.target.play() : e.target.pause();
 
