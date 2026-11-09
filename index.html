@@ -8,7 +8,8 @@
 3. WARNA     : cari "CSS 1. DASAR" lalu ubah variabel --n --m --c --s --iv.
 4. LAYOUT    : cari "JS 5. LAYOUT" (satu fungsi per jenis layout); peta slide ke layout ada di "JS 3. PETA SLIDE".
 5. VIDEO     : pembuka = <source src="shortmovie.mp4"> di bagian OPENING; penutup = "terima kasih.mp4" di DATA (terima.src).
-6. TOMBOL    : ketuk layar = lanjut di bagian pembuka; tombol ‹ › di bawah atau geser layar = pindah slide (di HP putar ke landscape), F layar penuh, N catatan, M menu, + - ukuran huruf, R kurangi gerak, Home/End, Esc tutup jendela.
+6. TOMBOL    : ketuk layar = lanjut (di HP, ketuk area kosong slide); tombol ‹ › di bawah atau geser layar = pindah slide, F layar penuh, N catatan, M menu, + - ukuran huruf, R kurangi gerak, Home/End, Esc tutup jendela.
+7. HP        : layout HP portrait ada di bagian "HP PORTRAIT" di akhir CSS. Di laptop tampilan tidak berubah.
 ======================================
 -->
 <head>
@@ -1163,31 +1164,58 @@ p {
   }
 }
 
-/* ===== CSS 9. HP / LAYAR SENTUH: petunjuk landscape dan tombol bawah lebih besar ===== */
-#rot { display:none; }
-@media (orientation:portrait) and (max-width:900px) {
-  #rot {
-    position:fixed;
-    inset:0;
-    z-index:200;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:16px;
-    background:#0D1B31;
-    color:#F7F5EF;
-    text-align:center;
-    padding:32px;
-    font:700 18px/1.4 'Plus Jakarta Sans',system-ui,sans-serif;
-  }
-  #rot b { font-size:56px; }
-}
+/* ===== CSS 10. LAYAR SENTUH: bar bawah lebih besar ===== */
 @media (pointer:coarse) {
   #hud { height:44px; }
   .s,
   #ov { inset:0 0 44px; }
   #hud button { height:34px; min-width:42px; }
+}
+
+/* ===== CSS 11. HP PORTRAIT: layout satu kolom, tanpa perlu landscape (laptop tidak terpengaruh) ===== */
+@media (orientation:portrait) and (max-width:900px) {
+  html { font-size:calc(100vw/34*var(--z)); }
+  .s { padding:1.4rem 1.2rem 1.2rem; overflow-y:auto; overflow-x:hidden; }
+  .s::before, .s::after { display:none; }
+  .s > * { flex:none!important; min-height:auto!important; }
+  .hd { gap:.9rem; margin-bottom:1rem; }
+  .hi { width:3.6rem; height:3.6rem; padding:.35rem; }
+  h2 { font-size:2.1rem; }
+  h2 small { font-size:1.1rem; }
+  .hero { flex-direction:column; justify-content:flex-start; gap:1.5rem; }
+  .hero h1 { font-size:3.6rem; }
+  .hero .sub { font-size:1.4rem; }
+  .stage { width:100%; max-width:26rem; height:22rem; align-self:center; }
+  .stage .t { width:11rem; left:1rem; }
+  .stage .u { width:10rem; right:1rem; }
+  .map, .acw, .eq, .sp2, .tm, .kn, .rf2 { grid-template-columns:1fr; gap:1rem; }
+  .art { display:none; }
+  .mc i { height:1rem; }
+  .op { text-align:center; font-size:3rem; }
+  .fw { flex-direction:column; }
+  .fw > i { transform:rotate(90deg); align-self:center; font-size:2.6rem; }
+  .kn .it, .kn .it:nth-child(2), .kn .it:nth-child(3) { margin-bottom:0; }
+  .kn .big { display:none; }
+  .tb.v { flex-direction:column; }
+  .tb.v .tl { width:auto; flex-direction:row; flex-wrap:wrap; }
+  .tp { flex-direction:column; align-items:flex-start; padding:1.4rem; min-height:auto; }
+  .tp .kid, .tb:not(.v) .tp .kid { width:8rem; align-self:center; }
+  .tb:not(.v) .tp h3, .tp h3 { font-size:1.9rem; }
+  .tb:not(.v) .tp p, .tp p { font-size:1.35rem; }
+  .qb { flex-direction:column; align-items:flex-start; }
+  .bub { font-size:1.35rem; }
+  .qo button { font-size:1.25rem; }
+  .en { flex-direction:column; gap:1.5rem; }
+  .en h1 { font-size:3.6rem; }
+  .en p { font-size:1.4rem; }
+  .vf { width:100%; flex:none; }
+  #md { padding:1.2rem; }
+  .mb { flex-direction:column; }
+  #mk { width:6rem; }
+  #mbd p { font-size:1.4rem; }
+  #mt { font-size:2rem; }
+  .st h1 { font-size:2.4rem; }
+  #hud #zm, #hud #zp, #hud #rmb, #hud #fs { display:none; }
 }
 </style>
 </head>
@@ -1257,8 +1285,6 @@ p {
 <button id="rmb" aria-label="Kurangi gerak (R)" aria-pressed="false"><svg viewBox="0 0 48 48"><use href="#i-mo"/></svg></button>
 <button id="zm" aria-label="Perkecil huruf">A−</button><button id="zp" aria-label="Perbesar huruf">A+</button>
 <button id="fs" aria-label="Layar penuh (F)"><svg viewBox="0 0 48 48"><use href="#i-fs"/></svg></button></div>
-
-<div id="rot"><b>⟳</b><span>Putar HP ke mode landscape (miring) supaya slide tampil penuh.</span></div>
 
 <!-- ===== OPENING: 0 mulai, 1 video, 2 satu kata, 3 diskusi, 4 judul ===== -->
 <div id="in"><div class="st on" id="st0"><button id="go">Mulai presentasi</button><p id="keys"></p></div>
@@ -1473,7 +1499,7 @@ const D = {
   terima: {"n": "Ucapkan terima kasih, lalu video penutup otomatis diputar. Bisa diputar ulang dengan tombol play. Buka sesi tanya jawab.", "h": "Terima <span>Kasih</span>", "p": "Sekian presentasi dari kami, bila ada yang bertanya kami akan memberi jawaban bukan harapan,karena kami di sini presentasi bukan mengisi hati yang sunyi..", "bm": "Silakan bertanya atau memberi masukan.", "stk": "✦ SAMPAI JUMPA", "src": "terima kasih.mp4"},
 
   start: "Bab 8 · Psikologi Pendidikan dan Bimbingan",
-  keys: "Ketuk layar untuk lanjut · tombol ‹ › di bawah untuk pindah slide · HP: geser layar"
+  keys: "Ketuk layar untuk lanjut · tombol ‹ › di bawah untuk pindah slide"
 };
 
 // ===== JS 1. PEMBANTU =====
@@ -1623,6 +1649,7 @@ function show(i) {
         v.currentTime = 0;
         v.play().catch(() => { });
     }
+    SC[i].scrollTop = 0;
     if (document.activeElement)
         document.activeElement.blur();
 }
@@ -1727,7 +1754,18 @@ addEventListener('touchend', e => {
 $('v1').querySelector('source').onerror = () => { $('vm').hidden = false; };
 $('v1').onclick = e => e.target.paused ? e.target.play() : e.target.pause();
 
-// ===== JS 13. KEYBOARD =====
+// ===== JS 13. KETUK = NEXT (khusus layar sentuh/HP; laptop tidak terpengaruh) =====
+document.addEventListener('click', e => {
+    if (!started || !matchMedia('(pointer:coarse)').matches)
+        return;
+    if ($('ov').classList.contains('on'))
+        return;
+    if (e.target.closest('button,video,a,#hud,#menu,#ov,#notes,[data-o],.ar,.tt'))
+        return;
+    go(1);
+});
+
+// ===== JS 14. KEYBOARD =====
 addEventListener('keydown', e => {
     const k = e.key, tg = e.target;
     if (!started) {
