@@ -286,6 +286,23 @@ p {
   color:var(--c);
   margin-top:2rem;
 }
+.hero .mem {
+  margin-top:1.4rem;
+  padding-left:1.1rem;
+  border-left:.3rem solid var(--c);
+}
+.hero .mem b {
+  display:block;
+  font:800 1.1rem 'Plus Jakarta Sans',system-ui,sans-serif;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--s);
+  margin-bottom:.3rem;
+}
+.hero .mem span {
+  display:block;
+  font:700 1.5rem/1.5 'Plus Jakarta Sans',system-ui,sans-serif;
+}
 .on .rise {
   animation:rise .9s cubic-bezier(.2,.8,.2,1) backwards;
 }
@@ -1231,7 +1248,7 @@ p {
    n = catatan presenter (tekan N) | h = judul slide | s = subjudul */
 const D = {
   /* ===== SLIDE: Judul ===== */
-  judul: {"n": "Buka dengan satu kalimat: bab ini membahas cara guru mengajar sekaligus membimbing. Sebut tujuan: paham konsep, prinsip, ciri, dan cara merancangnya.", "h": "Pembelajaran<br>Berbasis Bimbingan", "p": "Guru tidak hanya menyampaikan materi, tetapi membimbing peserta didik menuju kemandirian.", "src": "Bab 8 · Psikologi Pendidikan dan Bimbingan"},
+  judul: {"n": "Buka dengan satu kalimat: bab ini membahas cara guru mengajar sekaligus membimbing. Sebut tujuan: paham konsep, prinsip, ciri, dan cara merancangnya.", "h": "Pembelajaran<br>Berbasis Bimbingan", "p": "Guru tidak hanya menyampaikan materi, tetapi membimbing peserta didik menuju kemandirian.", "src": "Bab 8 · Psikologi Pendidikan dan Bimbingan", "anggota": ["Nazwa Aulya", "Bangbang Kusuma Riski", "Mochamad Fachri Nur Aufa"]},
 
   slides: [
     /* ===== SLIDE: Tujuan dan Materi ===== */
@@ -1458,6 +1475,7 @@ const R = {
           <h1 class="rise">${D.judul.h}</h1>
           <p class="sub rise" style="animation-delay:.15s">${D.judul.p}</p>
           <p class="src rise" style="animation-delay:.3s">${D.judul.src}</p>
+          <div class="mem rise" style="animation-delay:.4s"><b>Disusun oleh</b>${D.judul.anggota.map(n => `<span>${n}</span>`).join('')}</div>
         </div>
         <div class="stage rise" style="animation-delay:.2s">
           <div class="disc"></div>${kid('t', 'hand')}${kid('s', 'read')}<svg class="fo" style="left:0;top:3rem"><use href="#sb"/></svg><svg class="fo" style="right:2rem;top:0;animation-delay:-2s"><use href="#bulb"/></svg><svg class="fo" style="right:0;top:13rem;animation-delay:-3s;width:5rem;height:5rem"><use href="#cap"/></svg>
